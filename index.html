@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>慶州一日遊・釜山出發｜七大方案比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23170f;
+    --ink-soft:#5a4a3c;
+    --hanji:#f4ecdd;
+    --hanji-card:#fbf6ec;
+    --pine:#16332c;
+    --pine-2:#1f4339;
+    --celadon:#3c6a5d;
+    --brass:#bf962f;
+    --brass-soft:#d8b964;
+    --vermilion:#b23528;
+    --maple:#c4642a;
+    --line:#e2d4bd;
+    --ok:#3c6a5d;
+    --no:#b06a5e;
+    --self:#b08a36;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:"Noto Sans TC",system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--hanji);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:"Noto Serif TC",serif}
+  a{color:inherit}
+  img{display:block;max-width:100%}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    color:#f4ecdd;
+    padding:72px 24px 90px;
+    text-align:center;
+    overflow:hidden;
+    background:
+      linear-gradient(180deg, rgba(14,30,26,.78), rgba(14,30,26,.92)),
+      url("https://res.klook.com/image/upload/c_fill,w_1600,h_900,q_75/activities/gcozb6rj1alo3g2yafzv.jpg") center/cover no-repeat,
+      var(--pine);
+  }
+  .hero .eyebrow{
+    letter-spacing:.5em;
+    font-size:.72rem;
+    color:var(--brass-soft);
+    text-transform:uppercase;
+    margin:0 0 18px;
+    padding-left:.5em;
+  }
+  .hero h1{
+    font-weight:900;
+    font-size:clamp(2.1rem,6vw,3.7rem);
+    margin:0;
+    letter-spacing:.04em;
+    line-height:1.2;
+    text-shadow:0 2px 30px rgba(0,0,0,.4);
+  }
+  .hero .sub{
+    font-family:"Noto Serif TC",serif;
+    font-size:clamp(1rem,2.4vw,1.25rem);
+    color:#e7dcc7;
+    margin:18px auto 0;
+    max-width:620px;
+    font-weight:500;
+  }
+  .hero .rule{
+    width:54px;height:2px;background:var(--brass);
+    margin:26px auto 0;
+  }
+  .hero .stamp{
+    position:absolute;top:30px;right:30px;
+    width:78px;height:78px;border:2px solid var(--vermilion);
+    color:var(--vermilion);
+    display:grid;place-content:center;text-align:center;
+    transform:rotate(-7deg);
+    font-family:"Noto Serif TC",serif;font-weight:700;
+    background:rgba(244,236,221,.06);
+    border-radius:6px;line-height:1.15;
+    font-size:.92rem;
+  }
+  @media(max-width:640px){.hero .stamp{width:60px;height:60px;font-size:.72rem;top:18px;right:18px}}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  /* ---------- NOTE STRIP ---------- */
+  .note{
+    background:var(--hanji-card);
+    border:1px solid var(--line);
+    border-left:5px solid var(--maple);
+    border-radius:10px;
+    padding:20px 24px;
+    margin:-50px auto 14px;
+    position:relative;z-index:2;
+    box-shadow:0 14px 40px -22px rgba(35,23,15,.45);
+    max-width:1120px;
+  }
+  .note h2{margin:0 0 8px;font-size:1.05rem;color:var(--pine)}
+  .note p{margin:6px 0;font-size:.92rem;color:var(--ink-soft)}
+  .note b{color:var(--vermilion)}
+
+  /* ---------- LEGEND ---------- */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;
+    margin:24px auto 6px;font-size:.86rem;color:var(--ink-soft);
+  }
+  .legend .lg{display:inline-flex;gap:7px;align-items:center}
+  .dot{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.no{background:var(--no)} .dot.self{background:var(--self)}
+
+  /* ---------- CARDS ---------- */
+  .grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:24px;
+    margin:26px 0 10px;
+  }
+  @media(max-width:780px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--hanji-card);
+    border:1px solid var(--line);
+    border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow:0 18px 44px -30px rgba(35,23,15,.55);
+    opacity:0;transform:translateY(22px);
+    transition:opacity .7s ease,transform .7s ease, box-shadow .3s ease;
+  }
+  .card.in{opacity:1;transform:none}
+  .card:hover{box-shadow:0 26px 56px -28px rgba(35,23,15,.6)}
+  .card.feature{grid-column:1 / -1}
+  .card.feature .media{aspect-ratio:21/7}
+  .media{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,var(--pine),var(--celadon))}
+  .media img{width:100%;height:100%;object-fit:cover}
+  .media .seal{
+    position:absolute;top:14px;left:14px;
+    width:46px;height:46px;background:var(--vermilion);color:#fbf6ec;
+    display:grid;place-content:center;border-radius:7px;
+    font-family:"Noto Serif TC",serif;font-weight:900;font-size:1.5rem;
+    transform:rotate(-5deg);
+    box-shadow:0 4px 14px rgba(0,0,0,.3);
+  }
+  .media .plat{
+    position:absolute;top:16px;right:14px;
+    background:rgba(22,51,44,.82);color:#f4ecdd;
+    font-size:.72rem;letter-spacing:.08em;font-weight:700;
+    padding:5px 11px;border-radius:20px;backdrop-filter:blur(3px);
+  }
+  .body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
+  .pos{font-size:.78rem;letter-spacing:.18em;color:var(--brass);font-weight:700;margin:0 0 4px}
+  .body h3{margin:0 0 12px;font-size:1.32rem;color:var(--pine);line-height:1.35}
+
+  .route{
+    font-size:.9rem;color:var(--ink-soft);background:#f1e7d4;
+    border:1px dashed #d8c6a4;border-radius:9px;padding:11px 13px;margin:0 0 16px;
+  }
+  .route b{color:var(--maple);font-weight:700}
+  .route .arrow{color:var(--brass);padding:0 3px;font-weight:700}
+
+  .badges{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 16px}
+  .feature .badges{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:480px){.feature .badges{grid-template-columns:repeat(2,1fr)}}
+  .badge{
+    border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;
+  }
+  .badge .k{font-size:.68rem;letter-spacing:.12em;color:var(--ink-soft);text-transform:uppercase}
+  .badge .v{font-family:"Noto Serif TC",serif;font-weight:700;font-size:1.02rem;margin-top:2px;display:flex;align-items:center;gap:6px;line-height:1.25}
+  .pill{font-size:.66rem;font-weight:700;color:#fff;padding:2px 8px;border-radius:20px;font-family:"Noto Sans TC"}
+  .pill.ok{background:var(--ok)} .pill.no{background:var(--no)} .pill.self{background:var(--self)} .pill.season{background:#7d7a6a}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:auto}
+  @media(max-width:480px){.pc{grid-template-columns:1fr}}
+  .pc h4{margin:0 0 6px;font-size:.82rem;letter-spacing:.1em;font-family:"Noto Sans TC";font-weight:700}
+  .pc .good h4{color:var(--ok)} .pc .bad h4{color:var(--vermilion)}
+  .pc ul{margin:0;padding-left:0;list-style:none}
+  .pc li{font-size:.86rem;color:var(--ink-soft);padding-left:18px;position:relative;margin-bottom:5px}
+  .pc .good li::before{content:"＋";position:absolute;left:0;color:var(--ok);font-weight:700}
+  .pc .bad li::before{content:"－";position:absolute;left:0;color:var(--vermilion);font-weight:700}
+
+  .src{margin-top:16px}
+  .src a{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:.84rem;font-weight:700;text-decoration:none;color:var(--pine);
+    border:1.5px solid var(--pine);border-radius:22px;padding:8px 16px;
+    transition:background .2s,color .2s;
+  }
+  .src a:hover{background:var(--pine);color:#f4ecdd}
+
+  /* ---------- SECTION TITLE ---------- */
+  .sec-h{display:flex;align-items:center;gap:16px;margin:64px 0 8px}
+  .sec-h .num{font-family:"Noto Serif TC";color:var(--brass);font-weight:900;font-size:1.1rem;letter-spacing:.2em}
+  .sec-h h2{margin:0;font-size:1.7rem;color:var(--pine)}
+  .sec-h .line{flex:1;height:1px;background:var(--line)}
+
+  /* ---------- TABLE ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;margin-top:22px;background:var(--hanji-card)}
+  table{border-collapse:collapse;width:100%;min-width:720px;font-size:.88rem}
+  th,td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:var(--pine);color:#f4ecdd;font-family:"Noto Serif TC";font-weight:700;letter-spacing:.04em;position:sticky;top:0}
+  tbody tr:nth-child(even){background:#f6efe1}
+  td .nm{font-weight:700;color:var(--pine);font-family:"Noto Serif TC"}
+  td small{color:#9c8a72}
+  .tp{font-size:.72rem;font-weight:700;color:#fff;padding:2px 8px;border-radius:14px;white-space:nowrap}
+  .tp.ok{background:var(--ok)} .tp.no{background:var(--no)} .tp.self{background:var(--self)} .tp.season{background:#7d7a6a} .tp.na{background:#b6ab95}
+
+  /* ---------- VERDICT ---------- */
+  .verdict{
+    margin:50px 0 0;background:var(--pine);color:#ece3d2;border-radius:16px;
+    padding:34px 30px;
+  }
+  .verdict h2{margin:0 0 16px;color:#fff;font-size:1.5rem;display:flex;gap:12px;align-items:center}
+  .verdict h2 .s{width:34px;height:34px;background:var(--vermilion);border-radius:6px;display:grid;place-content:center;font-size:1rem;transform:rotate(-5deg);color:#fff}
+  .verdict .row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+  @media(max-width:720px){.verdict .row{grid-template-columns:1fr}}
+  .vc{background:rgba(244,236,221,.07);border:1px solid rgba(216,185,100,.3);border-radius:12px;padding:18px}
+  .vc .t{font-family:"Noto Serif TC";color:var(--brass-soft);font-weight:700;font-size:1.05rem;margin:0 0 6px}
+  .vc p{margin:0;font-size:.9rem;color:#d8cdb8}
+  .vc .pick{font-weight:700;color:#fff}
+
+  footer{padding:40px 22px 60px;text-align:center;color:var(--ink-soft);font-size:.8rem}
+  footer .rule{width:40px;height:1px;background:var(--line);margin:0 auto 16px}
+
+  @media (prefers-reduced-motion: reduce){
+    .card{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="stamp">慶州<br>古都</div>
+  <p class="eyebrow">Gyeongju · from Busan</p>
+  <h1>慶州一日遊　七大方案比較</h1>
+  <p class="sub">釜山出發・新羅千年古都　—　逐站路線、用餐時段與離團時間一次看懂</p>
+  <div class="rule"></div>
+</header>
+
+<div class="note">
+  <h2>閱讀前須知</h2>
+  <p>• <b>10 月屬「冬季班（10月–3月）」</b>：多數商品的 A-2／B-2 即此季節版本，日落較早，夜景時段會往前移，與夏季班時刻不同。</p>
+  <p>• <b>時間資料來源</b>：以下時刻已逐一開啟各商品頁、選定 10 月適用方案後實際讀取，七個方案皆附逐站時間；唯 KKday 131062 原頁僅列景點順序、未提供各站停留時長（已標明）。</p>
+</div>
+
+<main class="wrap">
+
+  <div class="legend">
+    <span style="font-weight:700;color:var(--pine)">用餐標記：</span>
+    <span class="lg"><span class="dot ok"></span>含／有安排</span>
+    <span class="lg"><span class="dot self"></span>自理・自由時段</span>
+    <span class="lg"><span class="dot no"></span>無此時段</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- 5 — FEATURE -->
+    <article class="card feature">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_1400,h_460,q_80/activities/ewsb9vf3x60p4rt1irct.jpg" alt="月精橋夜景">
+        <span class="seal">5</span>
+        <span class="plat">Klook · 210600</span>
+      </div>
+      <div class="body">
+        <p class="pos">時間最透明・午晚餐都有</p>
+        <h3>新羅古蹟與黃金夜景一日遊</h3>
+        <div class="route">佛國寺(1h30m) <span class="arrow">→</span> <b>午餐(1h)</b> <span class="arrow">→</span> 瞻星臺(30m) <span class="arrow">→</span> 大陵苑(1h) <span class="arrow">→</span> 皇理團路(1h30m) <span class="arrow">→</span> <b>晚餐(1h)</b> <span class="arrow">→</span> 月精橋(30m) <span class="arrow">→</span> 東宮與月池(1h10m)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v">1 小時 <span class="pill ok">可選含餐</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v">1 小時 <span class="pill ok">有</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 20:20</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:50 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>出發 09:30／09:50，東宮與月池停 1 小時 10 分後車程 1.5 小時，21:50 回釜山站、21:30 回西面，行程銜接最好抓</li>
+            <li>唯一午晚餐時段與逐站時長全部標清楚</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>最少 9 人成團</li>
+            <li>東宮與月池門票需現場另付；新上線、評價數較少</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.klook.com/zh-TW/activity/210600-busan-gyeongju-unesco-sites-night-view-tour/" target="_blank" rel="noopener">查看 Klook 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 1 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/wasfktcmkeuzlppxx2mn.jpg" alt="東宮與月池夜景">
+        <span class="seal">1</span>
+        <span class="plat">KKday · 579922</span>
+      </div>
+      <div class="body">
+        <p class="pos">路線精煉・白天到夜景</p>
+        <h3>全攻略 12 小時行程</h3>
+        <div class="route">佛國寺(1h30m) <span class="arrow">→</span> <b>午餐(1h)</b> <span class="arrow">→</span> 瞻星臺(30m) <span class="arrow">→</span> 大陵苑(1h) <span class="arrow">→</span> 皇理團路(1h30m) <span class="arrow">→</span> <b>晚餐(1h)</b> <span class="arrow">→</span> 月精橋(30m) <span class="arrow">→</span> 東宮與月池(1h)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v">1 小時 <span class="pill self">自理</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v">1 小時 <span class="pill self">自理</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 20:00</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:50 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>集合 09:20 釜山站／09:40 西面，11:30 抵佛國寺；不繞遠去良洞村，路線最精煉</li>
+            <li>白天到夜景一條龍，含韓服體驗、入場費</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>最少 7 人成團</li>
+            <li>午、晚餐皆自理（費用不含）</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.kkday.com/zh-tw/product/579922" target="_blank" rel="noopener">查看 KKday 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 6 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/nml9tx7ddgrnkynrytse.jpg" alt="佛國寺">
+        <span class="seal">6</span>
+        <span class="plat">Klook · 74147</span>
+      </div>
+      <div class="body">
+        <p class="pos">評價最穩・冬日日夜版</p>
+        <h3>釜山出發慶州古都一日遊（A2）</h3>
+        <div class="route">佛國寺(1h20m) <span class="arrow">→</span> 校村・月精橋(1h) <span class="arrow">→</span> 大陵苑(1h) <span class="arrow">→</span> 皇理團路(1h)<b>（晚餐自理）</b> <span class="arrow">→</span> 東宮與月池(1h) <span class="arrow">→</span> 月精橋夜景(30m)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v"><span class="pill season">無明確時段</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v">皇理團路 <span class="pill self">自理</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 20:20</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:30 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>Klook 特選＋「2026 韓國最佳當地玩樂」，口碑最穩</li>
+            <li>09:30 釜山站出發、12:00 抵佛國寺；A2 專為冬季日夜設計</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>站點偏多（含兩次月精橋、校村），節奏滿</li>
+            <li>無明確午餐時段、晚餐自理；含校村不含良洞村</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.klook.com/zh-TW/activity/74147-gyeongju-oneday-tour-gyeongju/" target="_blank" rel="noopener">查看 Klook 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/aorrw1qcjkiaguocyv7b.jpg" alt="大陵苑古墓群">
+        <span class="seal">4</span>
+        <span class="plat">Klook · 11062</span>
+      </div>
+      <div class="body">
+        <p class="pos">含午餐・天馬塚</p>
+        <h3>世界遺產一日遊（A-2）</h3>
+        <div class="route">佛國寺(1h10m) <span class="arrow">→</span> 良洞村(2h15m·午餐) <span class="arrow">→</span> 大陵苑／天馬塚／皇理團路(1h35m) <span class="arrow">→</span> 月精橋(20m) <span class="arrow">→</span> 東宮與月池(1h)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自費</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v"><span class="pill no">無</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 19:10</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:10 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>30K+ 人參加、口碑與 CP 值佳，09:00 釜山站出發</li>
+            <li>含良洞村＋天馬塚，午餐在良洞村休息站</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>無晚餐時段；18:10 才到東宮與月池、停 1 小時</li>
+            <li>有評價反映最後一站時間略趕</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.klook.com/zh-TW/activity/11062-gyeongju-unesco-world-heritage-site-day-trip-busan/" target="_blank" rel="noopener">查看 Klook 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/gbzp2vq82taorvr9dn3c.jpg" alt="皇理團路">
+        <span class="seal">2</span>
+        <span class="plat">KKday · 131062</span>
+      </div>
+      <div class="body">
+        <p class="pos">景點最多・日夜遊</p>
+        <h3>慶州日夜遊（A2 方案）</h3>
+        <div class="route" style="margin-bottom:8px"><b>A2・冬季（10月起）</b>　佛國寺 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 崔富者宅 <span class="arrow">→</span> 慶州鄉校 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 東宮與月池 <span class="arrow">→</span> 月精橋</div>
+        <div class="route"><b>B・夏季（4–9月）</b>　佛國寺 <span class="arrow">→</span> 良洞村 <span class="arrow">→</span> 瞻星臺 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 月精橋 <span class="arrow">→</span> 東宮與月池</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v"><span class="pill self">自費</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v"><span class="pill self">自費</span></div></div>
+          <div class="badge"><div class="k">結束</div><div class="v">約 21:20 回釜山</div></div>
+          <div class="badge"><div class="k">10 月適用</div><div class="v">A2 冬季班</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>A2 方案景點最多（含校村崔富者宅、慶州鄉校、月精橋）</li>
+            <li>接駁 09:20 釜山／09:40 西面；午晚餐皆預留自費時段</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>站點多易趕場；原頁僅列景點順序、未提供逐站停留時間</li>
+            <li>B 方案為夏季限定，10 月不適用</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.kkday.com/zh-tw/product/131062-gyeongju-1-day-tour-hwangridan-gil-daereungwon-bulguksa-donggung-wolji-south-korea" target="_blank" rel="noopener">查看 KKday 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/wdlemzgf5trev1sfdc0x.jpg" alt="良洞民俗村">
+        <span class="seal">3</span>
+        <span class="plat">KKday · 17654</span>
+      </div>
+      <div class="body">
+        <p class="pos">老牌穩・含良洞村</p>
+        <h3>慶州精選行程（B 方案）</h3>
+        <div class="route">佛國寺(1h10m) <span class="arrow">→</span> 良洞村(2h15m·午餐) <span class="arrow">→</span> 大陵苑(1h35m) <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 月精橋(20m) <span class="arrow">→</span> 東宮與月池(1h)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自理</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v"><span class="pill no">無</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 19:10</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:10 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>老牌穩定（4.8、10K+）、可加選釜山天空膠囊組合</li>
+            <li>B 方案（10–3月冬季版）含世界遺產良洞村，08:50 釜山站出發</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>良洞村停 2h15m、吃掉不少時間；無晚餐時段</li>
+            <li>東宮與月池 18:10 才到、停 1 小時；文案為機器翻譯</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.kkday.com/zh-tw/product/17654-day-tour-from-busan-gyeongju-unesco-world-heritage-site-south-korea" target="_blank" rel="noopener">查看 KKday 頁面 ↗</a></div>
+      </div>
+    </article>
+
+    <!-- 7 -->
+    <article class="card">
+      <div class="media">
+        <img src="https://res.klook.com/image/upload/c_fill,w_900,h_520,q_80/activities/eh8vw1iai20lhnzdzeq5.jpg" alt="瞻星台秋景">
+        <span class="seal">7</span>
+        <span class="plat">Klook · 117267</span>
+      </div>
+      <div class="body">
+        <p class="pos">賞楓限定・僅 10/26 或 10/28</p>
+        <h3>UNESCO 世界遺產與季節限定</h3>
+        <div class="route">佛國寺(12:00) <span class="arrow">→</span> 良洞村(13:30·午餐) <span class="arrow">→</span> 大陵苑(16:30) <span class="arrow">→</span> 瞻星臺(17:20) <span class="arrow">→</span> 月精橋(17:50) <span class="arrow">→</span> 東宮與月池(18:30)</div>
+        <div class="badges">
+          <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自理</span></div></div>
+          <div class="badge"><div class="k">晚餐</div><div class="v"><span class="pill no">基本無</span></div></div>
+          <div class="badge"><div class="k">離開最後一站</div><div class="v">約 19:30</div></div>
+          <div class="badge"><div class="k">回程</div><div class="v">21:30 釜山站</div></div>
+        </div>
+        <div class="pc">
+          <div class="good"><h4>優點</h4><ul>
+            <li>主打秋季賞楓，10 月底正當季；含全部景點門票</li>
+            <li>含良洞村＋天馬塚＋瞻星臺</li>
+          </ul></div>
+          <div class="bad"><h4>缺點</h4><ul>
+            <li>評價最弱（4.1、僅 7 則）、最少 8 人成團</li>
+            <li>良洞村→大陵苑車程達 50 分鐘；皇理團路未排入此行程</li>
+          </ul></div>
+        </div>
+        <div class="src"><a href="https://www.klook.com/zh-TW/activity/117267-gyeongju-day-tour-from-busan/" target="_blank" rel="noopener">查看 Klook 頁面 ↗</a></div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- TABLE -->
+  <div class="sec-h">
+    <span class="num">總覽</span>
+    <h2>一頁總表</h2>
+    <span class="line"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>方案</th><th>午餐</th><th>晚餐</th><th>最後一站 / 結束</th><th>一句話定位</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="nm">① KKday 579922</span><br><small>全攻略 12 小時</small></td>
+          <td><span class="tp ok">1 小時</span></td>
+          <td><span class="tp ok">1 小時</span></td>
+          <td>離東宮與月池約 20:00／21:50 回釜山站</td>
+          <td>路線精煉、無良洞村、含韓服</td>
+        </tr>
+        <tr>
+          <td><span class="nm">② KKday 131062</span><br><small>日夜遊・景點最多</small></td>
+          <td><span class="tp self">自費</span></td>
+          <td><span class="tp self">自費</span></td>
+          <td>月精橋／約 21:20 回釜山（無逐站時間）</td>
+          <td>景點最多、A2 冬季適用、B 為夏季</td>
+        </tr>
+        <tr>
+          <td><span class="nm">③ KKday 17654</span><br><small>精選・含良洞村</small></td>
+          <td><span class="tp self">良洞村</span></td>
+          <td><span class="tp self">自理</span></td>
+          <td>離東宮與月池約 19:10／21:10 回釜山站</td>
+          <td>老牌穩、可加天空膠囊</td>
+        </tr>
+        <tr>
+          <td><span class="nm">④ Klook 11062</span><br><small>A-2・含良洞村</small></td>
+          <td><span class="tp self">良洞村</span></td>
+          <td><span class="tp no">無</span></td>
+          <td>離東宮與月池約 19:10／21:10 回釜山站</td>
+          <td>口碑佳、CP 高、含良洞＋天馬塚</td>
+        </tr>
+        <tr>
+          <td><span class="nm">⑤ Klook 210600</span><br><small>時間最透明</small></td>
+          <td><span class="tp ok">可選含餐</span></td>
+          <td><span class="tp ok">有</span></td>
+          <td>約 20:20 離東宮與月池／21:50 回釜山站</td>
+          <td>時間最完整、午晚餐都有</td>
+        </tr>
+        <tr>
+          <td><span class="nm">⑥ Klook 74147</span><br><small>A2・評價最穩</small></td>
+          <td><span class="tp na">無明確</span></td>
+          <td><span class="tp self">皇理團路·自理</span></td>
+          <td>月精橋夜景約 20:20 離／21:30 回釜山站</td>
+          <td>評價最穩、冬日日夜版</td>
+        </tr>
+        <tr>
+          <td><span class="nm">⑦ Klook 117267</span><br><small>賞楓・限定日期</small></td>
+          <td><span class="tp self">良洞村</span></td>
+          <td><span class="tp no">基本無</span></td>
+          <td>離東宮與月池約 19:30／21:30 回釜山站</td>
+          <td>賞楓主題、評價弱、最少 8 人成團</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- VERDICT -->
+  <section class="verdict">
+    <h2><span class="s">選</span>怎麼挑？</h2>
+    <div class="row">
+      <div class="vc">
+        <p class="t">最好掌握行程銜接</p>
+        <p><span class="pick">⑤ Klook 210600</span>：午晚餐、逐站時長、回程時間全標清楚，東宮與月池約 20:20 離開、21:50 回釜山站，回程交通最好排。</p>
+      </div>
+      <div class="vc">
+        <p class="t">求口碑安全牌</p>
+        <p><span class="pick">⑥ Klook 74147</span> 或 <span class="pick">④ Klook 11062</span>：評價量最厚（3.9K／5.1K），導遊與行程口碑穩定。</p>
+      </div>
+      <div class="vc">
+        <p class="t">想一次踩好踩滿</p>
+        <p><span class="pick">② KKday 131062</span>：A2 方案景點最多，但站點多、節奏較趕，10 月冬季時刻需先確認。</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="rule"></div>
+  資料整理自 KKday 與 Klook 官方商品頁、並於 2026 年 6 月以瀏覽器選定 10 月適用方案後實際讀取時刻。實際時刻、用餐安排與成團人數仍以訂購當日官方頁面為準。<br>
+  KKday 131062 原頁僅列景點順序、未提供各站停留時長。
+</footer>
+
+<script>
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.card').forEach((c,i)=>{ c.style.transitionDelay=(i%2*90)+'ms'; io.observe(c); });
+</script>
+
+</body>
+</html>
