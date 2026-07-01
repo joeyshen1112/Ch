@@ -99,7 +99,17 @@
     display:grid;grid-template-columns:repeat(2,1fr);gap:24px;
     margin:-64px auto 40px;position:relative;z-index:2;
   }
-  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  /* 手機版：維持兩欄，縮小內距與字級讓排版不擁擠 */
+  @media(max-width:720px){
+    .grid{gap:13px;margin:-44px auto 34px}
+    .body{padding:14px 15px 16px}
+    .body h3{font-size:1.06rem;margin-bottom:7px}
+    .body p{font-size:.82rem;line-height:1.55;margin-bottom:14px}
+    .pos{font-size:.66rem;letter-spacing:.12em}
+    .cta{font-size:.8rem}
+    .media .glyph{font-size:clamp(2.4rem,11vw,3.2rem)}
+    .media .seal{width:38px;height:38px;font-size:1.2rem;top:10px;left:10px}
+  }
 
   .card{
     background:var(--hanji-card);
