@@ -211,6 +211,34 @@
   .tp{font-size:.72rem;font-weight:700;color:#fff;padding:2px 8px;border-radius:14px;white-space:nowrap}
   .tp.ok{background:var(--ok)} .tp.no{background:var(--no)} .tp.self{background:var(--self)} .tp.season{background:#7d7a6a} .tp.na{background:#b6ab95}
 
+  /* ---------- MATRIX ---------- */
+  .matrix{min-width:780px}
+  .matrix th,.matrix td{text-align:center;padding:11px 8px}
+  .matrix thead th{font-size:.82rem;line-height:1.3;padding:10px 6px}
+  .matrix thead th small{display:block;color:var(--brass-soft);font-weight:400;font-size:.66rem;margin-top:2px}
+  .matrix th:first-child,.matrix td:first-child{text-align:left}
+  .matrix .attr{font-weight:700;color:var(--pine);font-family:"Noto Serif TC";white-space:nowrap}
+  .matrix .attr small{display:block;color:#9c8a72;font-weight:400;font-family:"Noto Sans TC";font-size:.68rem}
+  .matrix .yes{color:var(--ok);font-weight:800;font-size:1.1rem}
+  .matrix .no{color:#d8cbb2;font-size:1rem}
+  .matrix tbody tr:hover{background:#efe6d2}
+  .matrix .cntrow td{border-top:2px solid var(--line);font-family:"Noto Serif TC";font-weight:700;color:var(--maple);background:#f6efe1}
+  .matrix .cntrow td:first-child{color:var(--ink-soft)}
+
+  /* ---------- SUBPLAN (split plans in one card) ---------- */
+  .subplan{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-bottom:11px;background:#fff}
+  .subplan.applies{border-left:4px solid var(--ok)}
+  .subplan.na{border-left:4px solid #b8ad96}
+  .subplan .sph{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+  .subplan .tag{font-size:.7rem;font-weight:700;color:#fff;padding:3px 10px;border-radius:14px;white-space:nowrap}
+  .subplan .tag.win{background:var(--celadon)}
+  .subplan .tag.sum{background:var(--maple)}
+  .subplan .badge-yes{font-size:.72rem;font-weight:700;color:var(--ok)}
+  .subplan .badge-na{font-size:.72rem;font-weight:700;color:#9c8a72}
+  .subplan .rt{font-size:.86rem;color:var(--ink-soft);line-height:1.65}
+  .subplan .rt .arrow{color:var(--brass);padding:0 2px}
+  .subplan .meta{font-size:.76rem;color:#9c8a72;margin-top:7px;line-height:1.55}
+
   /* ---------- VERDICT ---------- */
   .verdict{
     margin:50px 0 0;background:var(--pine);color:#ece3d2;border-radius:16px;
@@ -393,24 +421,26 @@
         <span class="plat">KKday · 131062</span>
       </div>
       <div class="body">
-        <p class="pos">景點最多・日夜遊</p>
-        <h3>慶州日夜遊（A2 方案）</h3>
-        <div class="route" style="margin-bottom:8px"><b>A2・冬季（10月起）</b>　佛國寺 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 崔富者宅 <span class="arrow">→</span> 慶州鄉校 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 東宮與月池 <span class="arrow">→</span> 月精橋</div>
-        <div class="route"><b>B・夏季（4–9月）</b>　佛國寺 <span class="arrow">→</span> 良洞村 <span class="arrow">→</span> 瞻星臺 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 月精橋 <span class="arrow">→</span> 東宮與月池</div>
-        <div class="badges">
-          <div class="badge"><div class="k">午餐</div><div class="v"><span class="pill self">自費</span></div></div>
-          <div class="badge"><div class="k">晚餐</div><div class="v"><span class="pill self">自費</span></div></div>
-          <div class="badge"><div class="k">結束</div><div class="v">約 21:20 回釜山</div></div>
-          <div class="badge"><div class="k">10 月適用</div><div class="v">A2 冬季班</div></div>
+        <p class="pos">兩種路線可選</p>
+        <h3>慶州日夜遊（A2／B）</h3>
+        <div class="subplan applies">
+          <div class="sph"><span class="tag win">A2・冬季行程</span><span class="badge-yes">✅ 10 月可選</span></div>
+          <div class="rt">佛國寺 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 崔富者宅 <span class="arrow">→</span> 慶州鄉校 <span class="arrow">→</span> 校村 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 東宮與月池 <span class="arrow">→</span> 月精橋</div>
+          <div class="meta">走校村（含崔富者宅、慶州鄉校）｜午晚餐自費｜接駁 09:20 釜山／09:40 西面｜約 21:20 回釜山</div>
+        </div>
+        <div class="subplan applies">
+          <div class="sph"><span class="tag sum">B・夏季行程</span><span class="badge-yes">✅ 10 月也可選</span></div>
+          <div class="rt">佛國寺 <span class="arrow">→</span> 良洞村 <span class="arrow">→</span> 瞻星臺 <span class="arrow">→</span> 大陵苑 <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 月精橋 <span class="arrow">→</span> 東宮與月池</div>
+          <div class="meta">走良洞村＋瞻星臺、不走校村｜餐費自理｜接駁 09:50 釜山／10:10 西面｜10/22–29 實測皆可訂</div>
         </div>
         <div class="pc">
           <div class="good"><h4>優點</h4><ul>
-            <li>A2 方案景點最多（含校村崔富者宅、慶州鄉校、月精橋）</li>
-            <li>接駁 09:20 釜山／09:40 西面；午晚餐皆預留自費時段</li>
+            <li>兩種路線可選：A2 走校村、B 走良洞村＋瞻星臺（10 月皆可訂）</li>
+            <li>午晚餐皆預留自費時段</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
             <li>站點多易趕場；原頁僅列景點順序、未提供逐站停留時間</li>
-            <li>B 方案為夏季限定，10 月不適用</li>
+            <li>A2 與 B 為不同路線、下單時擇一</li>
           </ul></div>
         </div>
         <div class="src"><a href="https://www.kkday.com/zh-tw/product/131062-gyeongju-1-day-tour-hwangridan-gil-daereungwon-bulguksa-donggung-wolji-south-korea" target="_blank" rel="noopener">查看 KKday 頁面 ↗</a></div>
@@ -481,6 +511,70 @@
 
   </div>
 
+  <!-- MATRIX -->
+  <div class="sec-h">
+    <span class="num">對照</span>
+    <h2>景點 × 方案矩陣</h2>
+    <span class="line"></span>
+  </div>
+  <p style="color:var(--ink-soft);font-size:.9rem;margin:6px 0 0">✓ 表示該方案會前往；空白（–）表示不去。131062 拆成 <b>A2</b> 與 <b>B</b> 兩欄；兩者 10 月皆可預訂，差別在路線 —— A2 走校村、B 走良洞村＋瞻星臺。</p>
+
+  <div class="table-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>景點</th>
+          <th>①<small>579922</small></th>
+          <th>②A<small>131062 A2</small></th>
+          <th>②B<small>131062 B</small></th>
+          <th>③<small>17654</small></th>
+          <th>④<small>11062</small></th>
+          <th>⑤<small>210600</small></th>
+          <th>⑥<small>74147</small></th>
+          <th>⑦<small>117267</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="attr">佛國寺</td>
+          <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td class="attr">良洞村</td>
+          <td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td class="attr">校村<small>崔富者宅・慶州鄉校</small></td>
+          <td class="no">–</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="no">–</td>
+        </tr>
+        <tr>
+          <td class="attr">瞻星臺</td>
+          <td class="yes">✓</td><td class="no">–</td><td class="yes">✓</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td class="attr">大陵苑<small>含天馬塚</small></td>
+          <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td class="attr">皇理團路</td>
+          <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td>
+        </tr>
+        <tr>
+          <td class="attr">月精橋</td>
+          <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td class="attr">東宮與月池</td>
+          <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+        </tr>
+        <tr class="cntrow">
+          <td>景點數</td>
+          <td>6</td><td>6</td><td>7</td><td>6</td><td>7</td><td>6</td><td>6</td><td>6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- TABLE -->
   <div class="sec-h">
     <span class="num">總覽</span>
@@ -502,11 +596,18 @@
           <td>路線精煉、無良洞村、含韓服</td>
         </tr>
         <tr>
-          <td><span class="nm">② KKday 131062</span><br><small>日夜遊・景點最多</small></td>
+          <td><span class="nm">② KKday 131062・A2</span><br><small>冬季行程路線・10 月可選</small></td>
           <td><span class="tp self">自費</span></td>
           <td><span class="tp self">自費</span></td>
           <td>月精橋／約 21:20 回釜山（無逐站時間）</td>
-          <td>景點最多、A2 冬季適用、B 為夏季</td>
+          <td>走校村，含崔富者宅、慶州鄉校</td>
+        </tr>
+        <tr>
+          <td><span class="nm">② KKday 131062・B</span><br><small>夏季行程路線・10 月也可選</small></td>
+          <td><span class="tp self">自理</span></td>
+          <td><span class="tp self">自理</span></td>
+          <td>東宮與月池／約 21:20 回釜山（無逐站時間）</td>
+          <td>走良洞村＋瞻星臺、不走校村</td>
         </tr>
         <tr>
           <td><span class="nm">③ KKday 17654</span><br><small>精選・含良洞村</small></td>
@@ -561,7 +662,7 @@
       </div>
       <div class="vc">
         <p class="t">想一次踩好踩滿</p>
-        <p><span class="pick">② KKday 131062</span>：A2 方案景點最多，但站點多、節奏較趕，10 月冬季時刻需先確認。</p>
+        <p><span class="pick">② KKday 131062</span>：兩種路線可選 —— A2 走校村、B 走良洞村＋瞻星臺，10 月都能訂；站點多、節奏較趕。</p>
       </div>
     </div>
   </section>
