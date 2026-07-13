@@ -40,7 +40,8 @@ function pieCSS(byCat, total) {
 
 export function renderExpenses(el, engine) {
   const rateRec = engine.data.settings.exchangeRate;
-  const rate = Number((rateRec && rateRec.value) || 0.023);
+  const rateRaw = Number(rateRec && rateRec.value);
+  const rate = Number.isFinite(rateRaw) && rateRaw > 0 ? rateRaw : 0.023; // Sheet 被手改壞也不會 NaN
   const today = todayStr();
   const records = Object.values(engine.data.expenses)
     .filter(r => Number(r.deleted) !== 1)

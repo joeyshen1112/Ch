@@ -186,3 +186,11 @@ test('gasTransport 組出正確請求並解包錯誤', async () => {
   assert.deepEqual(JSON.parse(seen[1].opts.body), { token: 'se cret', ops: [{ tab: 'expenses', record: { id: '1' } }] });
   await assert.rejects(() => tr.pull(0), /unauthorized/);
 });
+
+test('pull 以 lastSync-60s 的重疊視窗增量拉取', async () => {
+  const t = fakeTransport();
+  const e = makeEngine(t);
+  e.lastSync = 100000;
+  await e.pull();
+  assert.equal(t.calls.pull[0], 40000);
+});

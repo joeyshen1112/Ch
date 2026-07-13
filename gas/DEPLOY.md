@@ -11,7 +11,8 @@
 6. 驗證（把 URL 與 TOKEN 換成你的）：
    curl -sL "<URL>?action=pull&since=0&token=<TOKEN>"
    → 應回 {"serverTime":...,"itinerary":[],"expenses":[],"phrases":[],"settings":{}}
-   curl -sL -H "Content-Type: text/plain" -d '{"token":"<TOKEN>","ops":[{"tab":"expenses","record":{"id":"t1","date":"2026-10-22","title":"測試","category":"餐飲","amount":1000,"currency":"KRW","deleted":0}}]}' "<URL>"
+   curl -sL -H "Content-Type: text/plain;charset=utf-8" -d '{"token":"<TOKEN>","ops":[{"tab":"expenses","record":{"id":"t1","date":"2026-10-22","title":"測試","category":"餐飲","amount":1000,"currency":"KRW","deleted":0}}]}' "<URL>"
    → 應回 {"serverTime":...,"applied":["t1"]}，且 Sheet expenses 分頁出現一列。
 7. 錯誤 token 驗證：把 token 改錯重打步驟 6 第一條 → 應回 {"error":"unauthorized"}。
+   驗證完成後，到試算表 expenses 分頁把測試列（id 為 t1 或 spike- 開頭）整列刪除，帳本才不會混入測試資料。
 8. 之後若改了 Code.gs：「部署 → 管理部署作業 → 編輯 → 版本：新版本」（URL 不變）。

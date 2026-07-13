@@ -124,7 +124,7 @@ $('rate-save').onclick = () => {
   $('settings-dlg').close();
 };
 $('unpair').onclick = () => {
-  if (confirm('確定要重設配對碼？')) { localStorage.removeItem(LS.pair); location.reload(); }
+  if (confirm('確定要重設配對碼？')) { localStorage.removeItem(LS.pair); localStorage.removeItem(LS.lastSync); location.reload(); }
 };
 $('refresh').onclick = () => engine.syncNow();
 

@@ -151,7 +151,8 @@ export class SyncEngine {
   }
   async pull() {
     try {
-      const resp = await this.transport.pull(this.lastSync);
+      // 往回多拉 60 秒：伺服器批次寫入非原子，避免 pull 撞上寫入中的批次而永久漏掉記錄（LWW 合併具冪等性）
+      const resp = await this.transport.pull(Math.max(0, this.lastSync - 60000));
       this.online = true;
       for (const tab of ['itinerary', 'expenses']) {
         this.data[tab] = mergeServerRecords(this.data[tab], resp[tab], this.pendingKeys_(tab), 'id');

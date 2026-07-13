@@ -30,7 +30,12 @@ function setup() {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (!checkToken_(p.token)) return json_({ error: 'unauthorized' });
-  if (p.action === 'pull') return json_(pull_(Number(p.since || 0)));
+  if (p.action === 'pull') {
+    const lock = LockService.getScriptLock(); // 與 doPost 互斥：避免讀到寫入一半的批次
+    lock.waitLock(20000);
+    try { return json_(pull_(Number(p.since || 0))); }
+    finally { lock.releaseLock(); }
+  }
   return json_({ error: 'unknown action' });
 }
 
