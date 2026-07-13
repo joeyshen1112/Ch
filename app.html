@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>釜山旅遊工具</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app/app.css">
+</head>
+<body>
+
+<!-- 配對畫面 -->
+<div id="pair-view" hidden>
+  <main>
+    <div class="card" style="margin-top:40px">
+      <h2 style="margin:0 0 6px">🔗 配對</h2>
+      <p class="muted">貼上 Joey 給你的配對碼，之後不會再問。</p>
+      <label class="field" for="pair-code">配對碼</label>
+      <input id="pair-code" autocomplete="off" placeholder="eyJ1cmwiOi...">
+      <p id="pair-err" class="muted" style="color:var(--vermilion)" hidden>配對碼格式不對，再確認一次。</p>
+      <button class="btn" id="pair-go" style="margin-top:12px;width:100%">開始使用</button>
+    </div>
+  </main>
+</div>
+
+<!-- 主畫面 -->
+<div id="app-view" hidden>
+  <header class="topbar">
+    <h1>釜山旅遊工具<span class="sub">2026.10.22 – 10.29</span></h1>
+    <span class="sync" id="sync-status">…</span>
+    <button class="iconbtn" id="refresh" title="手動同步">↻</button>
+    <button class="iconbtn" id="settings" title="設定">⚙</button>
+  </header>
+  <main id="tab-content"></main>
+  <nav class="tabs">
+    <button data-tab="itinerary"><span class="e">📅</span>行程</button>
+    <button data-tab="expenses"><span class="e">💰</span>記帳</button>
+    <button data-tab="phrases"><span class="e">🇰🇷</span>韓文</button>
+  </nav>
+</div>
+
+<!-- 設定 -->
+<dialog id="settings-dlg">
+  <h3 style="margin:0 0 10px">⚙ 設定</h3>
+  <label class="field" for="rate-input">匯率（1 KRW = ? TWD，兩機共用）</label>
+  <input id="rate-input" inputmode="decimal">
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button class="btn" id="rate-save">儲存</button>
+    <button class="btn ghost" id="dlg-close">關閉</button>
+  </div>
+  <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+  <button class="btn warn" id="unpair">重設配對碼</button>
+</dialog>
+
+<script type="module">
+import { SyncEngine, gasTransport, decodePairCode, LS } from './app/sync.js';
+import { renderExpenses } from './app/expenses.js';
+
+const $ = id => document.getElementById(id);
+let engine = null;
+
+/* ---------- 配對 ---------- */
+function getPair() {
+  try { return JSON.parse(localStorage.getItem(LS.pair)); } catch (_) { return null; }
+}
+function showPairView() {
+  $('app-view').hidden = true;
+  $('pair-view').hidden = false;
+}
+$('pair-go').onclick = () => {
+  const pair = decodePairCode($('pair-code').value);
+  if (!pair) { $('pair-err').hidden = false; return; }
+  localStorage.setItem(LS.pair, JSON.stringify(pair));
+  location.reload();
+};
+
+/* ---------- 同步狀態列 ---------- */
+function renderStatus(s) {
+  const el = $('sync-status');
+  if (s.unauthorized) {
+    localStorage.removeItem(LS.pair);
+    alert('配對已失效，請重新輸入配對碼');
+    location.reload();
+    return;
+  }
+  el.classList.toggle('off', !s.online);
+  el.textContent = !s.online
+    ? `⚡ 離線${s.pending ? '・' + s.pending + ' 筆待送' : ''}`
+    : s.flushing || s.pending ? '↻ 同步中' : '✓ 已同步';
+}
+
+/* ---------- Tab 路由 ---------- */
+const TABS = {
+  itinerary: el => { el.innerHTML = '<div class="placeholder"><span class="e">📅</span>行程功能建置中</div>'; },
+  expenses: el => renderExpenses(el, engine),
+  phrases: el => { el.innerHTML = '<div class="placeholder"><span class="e">🇰🇷</span>韓文短語建置中</div>'; },
+};
+function currentTab() {
+  const h = location.hash.replace('#', '');
+  return TABS[h] ? h : (localStorage.getItem(LS.tab) || 'expenses');
+}
+function renderTab() {
+  const tab = currentTab();
+  localStorage.setItem(LS.tab, tab);
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  TABS[tab]($('tab-content'));
+}
+document.querySelectorAll('.tabs button').forEach(b => { b.onclick = () => { location.hash = b.dataset.tab; }; });
+window.addEventListener('hashchange', renderTab);
+
+/* ---------- 設定 ---------- */
+$('settings').onclick = () => {
+  const rec = engine.data.settings.exchangeRate;
+  $('rate-input').value = rec ? rec.value : '0.023';
+  $('settings-dlg').showModal();
+};
+$('dlg-close').onclick = () => $('settings-dlg').close();
+$('rate-save').onclick = () => {
+  const v = parseFloat($('rate-input').value);
+  if (!Number.isFinite(v) || v <= 0) return;
+  engine.upsert('settings', { key: 'exchangeRate', value: String(v) });
+  $('settings-dlg').close();
+};
+$('unpair').onclick = () => {
+  if (confirm('確定要重設配對碼？')) { localStorage.removeItem(LS.pair); location.reload(); }
+};
+$('refresh').onclick = () => engine.syncNow();
+
+/* ---------- 啟動 ---------- */
+const pair = getPair();
+if (!pair) {
+  showPairView();
+} else {
+  $('app-view').hidden = false;
+  engine = new SyncEngine({
+    transport: gasTransport(pair),
+    storage: localStorage,
+    onChange: renderTab,
+    onStatus: renderStatus,
+  });
+  renderTab();
+  engine.start();
+}
+</script>
+</body>
+</html>
