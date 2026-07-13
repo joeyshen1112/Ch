@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GAS 連通測試</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:640px;margin:24px auto;padding:0 16px;background:#f4ecdd;color:#23170f}
+  input{width:100%;box-sizing:border-box;padding:8px;margin:4px 0 12px;border:1px solid #e2d4bd;border-radius:8px}
+  button{padding:10px 16px;margin:0 8px 8px 0;border:0;border-radius:8px;background:#16332c;color:#f4ecdd;font-weight:700}
+  pre{background:#fbf6ec;border:1px solid #e2d4bd;border-radius:8px;padding:12px;white-space:pre-wrap;word-break:break-all}
+</style>
+</head>
+<body>
+<h1>GAS 連通測試</h1>
+<label>GAS Web App URL（.../exec）</label><input id="url" placeholder="https://script.google.com/macros/s/.../exec">
+<label>TOKEN</label><input id="token">
+<button id="pull">1. 測試 pull</button>
+<button id="push">2. 測試 push</button>
+<button id="pair">3. 產生配對碼</button>
+<pre id="log">結果會顯示在這裡</pre>
+<script>
+const $ = id => document.getElementById(id);
+const log = v => { $('log').textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2); };
+$('pull').onclick = async () => {
+  try {
+    const r = await fetch(`${$('url').value}?action=pull&since=0&token=${encodeURIComponent($('token').value)}`);
+    log(await r.json());
+  } catch (e) { log('FAIL: ' + e.message); }
+};
+$('push').onclick = async () => {
+  try {
+    const body = JSON.stringify({ token: $('token').value, ops: [{ tab: 'expenses', record: {
+      id: 'spike-' + Date.now(), date: '2026-10-22', title: 'spike 測試', category: '其他',
+      amount: 100, currency: 'KRW', deleted: 0 } }] });
+    const r = await fetch($('url').value, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+    log(await r.json());
+  } catch (e) { log('FAIL: ' + e.message); }
+};
+$('pair').onclick = () => log(btoa(JSON.stringify({ url: $('url').value, token: $('token').value })));
+</script>
+</body>
+</html>
