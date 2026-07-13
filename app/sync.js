@@ -73,6 +73,7 @@ export class SyncEngine {
     this.lastSync = 0;
     this.attempt = 0;
     this.flushing = false;
+    this.retryPending = false;
     this.online = true;
     this.timer = null;
     this.retryTimer = null;
@@ -95,6 +96,7 @@ export class SyncEngine {
     return s;
   }
   pendingCount() { return this.inFlight.length + this.queue.length; }
+  opKey_(op) { return op.tab + ' ' + op.record[keyFieldOf(op.tab)]; }
   status_(extra) {
     this.onStatus(Object.assign({ online: this.online, pending: this.pendingCount(), flushing: this.flushing }, extra));
   }
@@ -110,30 +112,41 @@ export class SyncEngine {
     this.status_();
     this.flush();
   }
-  async flush() {
-    if (this.flushing || this.queue.length === 0) return;
+  async flush(force = false) {
+    if (this.flushing) return;
+    if (this.retryPending && !force) return; // 退避期間不重送（手動同步例外）
+    if (this.queue.length === 0) return;
+    if (force) { clearTimeout(this.retryTimer); this.retryPending = false; }
     this.flushing = true;
     this.status_();
-    this.inFlight = this.queue.splice(0, 50);
     try {
-      await this.transport.push(this.inFlight);
-      this.inFlight = [];
-      this.attempt = 0;
-      this.online = true;
-    } catch (err) {
-      this.queue = this.inFlight.concat(this.queue);
-      this.inFlight = [];
-      this.online = false;
-      this.attempt += 1;
-      const delay = Math.min(1000 * Math.pow(4, this.attempt - 1), 16000); // 1s/4s/16s
-      clearTimeout(this.retryTimer);
-      this.retryTimer = setTimeout(() => this.flush(), delay);
-      if (String(err.message) === 'unauthorized') this.status_({ unauthorized: true });
+      while (this.queue.length > 0) {
+        this.inFlight = this.queue.splice(0, 50);
+        try {
+          await this.transport.push(this.inFlight);
+          this.inFlight = [];
+          this.attempt = 0;
+          this.online = true;
+          this.save_();
+        } catch (err) {
+          // 送出期間若同 (tab,key) 已有更新版本進佇列，丟棄過時的 inFlight op
+          const superseded = new Set(this.queue.map(op => this.opKey_(op)));
+          this.queue = this.inFlight.filter(op => !superseded.has(this.opKey_(op))).concat(this.queue);
+          this.inFlight = [];
+          this.online = false;
+          this.attempt += 1;
+          const delay = Math.min(1000 * Math.pow(4, this.attempt - 1), 16000); // 1s/4s/16s
+          clearTimeout(this.retryTimer);
+          this.retryPending = true;
+          this.retryTimer = setTimeout(() => { this.retryPending = false; this.flush(); }, delay);
+          if (String(err.message) === 'unauthorized') this.status_({ unauthorized: true });
+          break;
+        }
+      }
     } finally {
       this.flushing = false;
       this.save_();
       this.status_();
-      if (this.online && this.queue.length > 0) this.flush(); // 佇列還有就續送
     }
   }
   async pull() {
@@ -155,7 +168,7 @@ export class SyncEngine {
     }
     this.status_();
   }
-  async syncNow() { await this.flush(); await this.pull(); }
+  async syncNow() { await this.flush(true); await this.pull(); }
   start(doc = (typeof document === 'undefined' ? null : document)) {
     this.syncNow();
     this.timer = setInterval(() => {

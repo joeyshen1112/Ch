@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { encodePairCode, decodePairCode, mergeServerRecords, memStorage, SyncEngine } from '../app/sync.js';
+import { encodePairCode, decodePairCode, mergeServerRecords, memStorage, SyncEngine, gasTransport } from '../app/sync.js';
 
 test('配對碼 roundtrip', () => {
   const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
@@ -80,7 +80,7 @@ test('flush 成功清空佇列、失敗保留佇列', async () => {
   assert.equal(e.pendingCount(), 1);
   clearTimeout(e.retryTimer);
   t.failPush = false;
-  await e.flush();
+  await e.flush(true);
   assert.equal(e.pendingCount(), 0);
   assert.equal(t.calls.push.length, 2);
 });
@@ -126,4 +126,63 @@ test('資料與佇列持久化到 storage 並可重建', async () => {
   const e2 = new SyncEngine({ transport: t, storage: s, pollMs: 999999 });
   assert.equal(e2.data.expenses.k1.title, '存起來');
   assert.equal(e2.pendingCount(), 1);
+});
+
+test('送出失敗且飛行中記錄已被更新時，過時版本不重複入列', async () => {
+  const t = fakeTransport();
+  const e = makeEngine(t);
+  let rejectPush;
+  t.push = () => new Promise((_, rej) => { rejectPush = rej; }); // 手動控制失敗時機
+  e.upsert('expenses', { id: 'x1', title: 'v1', updatedAt: 1 }); // 進入 inFlight
+  e.upsert('expenses', { id: 'x1', title: 'v2', updatedAt: 2 }); // 送出期間的新版本 → queue
+  rejectPush(new Error('network'));
+  await new Promise(r => setTimeout(r, 0)); // 讓 catch/finally 跑完
+  assert.equal(e.pendingCount(), 1);        // v1 被 v2 取代，不重複
+  assert.equal(e.queue[0].record.title, 'v2');
+  clearTimeout(e.retryTimer);
+});
+
+test('退避期間的 upsert 不會立即重送，flush(true) 可強制', async () => {
+  const t = fakeTransport();
+  const e = makeEngine(t);
+  e.flushing = true;
+  e.upsert('expenses', { id: 'b1', title: 'a', updatedAt: 1 });
+  e.flushing = false;
+  t.failPush = true;
+  await e.flush();                    // 失敗 → 進入退避
+  const callsAfterFail = t.calls.push.length;
+  e.upsert('expenses', { id: 'b2', title: 'b', updatedAt: 2 }); // 退避期間新增
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(t.calls.push.length, callsAfterFail); // 沒有立即重送
+  t.failPush = false;
+  await e.flush(true);                // 手動強制
+  assert.equal(e.pendingCount(), 0);
+  clearTimeout(e.retryTimer);
+});
+
+test('flush 一次呼叫排空多批佇列（>50 筆）', async () => {
+  const t = fakeTransport();
+  const e = makeEngine(t);
+  e.flushing = true;
+  for (let i = 0; i < 120; i++) e.upsert('expenses', { id: 'm' + i, title: 't', updatedAt: i });
+  e.flushing = false;
+  await e.flush();
+  assert.equal(e.pendingCount(), 0);
+  assert.deepEqual(t.calls.push.map(b => b.length), [50, 50, 20]);
+});
+
+test('gasTransport 組出正確請求並解包錯誤', async () => {
+  const seen = [];
+  const fakeFetch = async (url, opts) => {
+    seen.push({ url, opts });
+    return { json: async () => (seen.length === 3 ? { error: 'unauthorized' } : { serverTime: 1, applied: [] }) };
+  };
+  const tr = gasTransport({ url: 'https://x.test/exec', token: 'se cret' }, fakeFetch);
+  await tr.pull(123);
+  assert.equal(seen[0].url, 'https://x.test/exec?action=pull&since=123&token=se%20cret');
+  await tr.push([{ tab: 'expenses', record: { id: '1' } }]);
+  assert.equal(seen[1].opts.method, 'POST');
+  assert.equal(seen[1].opts.headers['Content-Type'], 'text/plain;charset=utf-8');
+  assert.deepEqual(JSON.parse(seen[1].opts.body), { token: 'se cret', ops: [{ tab: 'expenses', record: { id: '1' } }] });
+  await assert.rejects(() => tr.pull(0), /unauthorized/);
 });
