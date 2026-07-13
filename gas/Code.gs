@@ -9,6 +9,15 @@ const SHEET_TABS = {
   settings:  ['key','value'],
 };
 
+/* Sheets 會把日期樣式文字自動轉成 Date；讀取時就地正規化回字串 */
+const FIELD_FORMATS = { day: 'yyyy-MM-dd', date: 'yyyy-MM-dd', time: 'HH:mm' };
+function normalize_(field, value) {
+  if (value instanceof Date && FIELD_FORMATS[field]) {
+    return Utilities.formatDate(value, Session.getScriptTimeZone(), FIELD_FORMATS[field]);
+  }
+  return value;
+}
+
 /* 首次執行一次：建立四個分頁與表頭，並把全表設為純文字格式
  * （避免 Sheets 把 2026-10-24 自動轉成 Date、pull 回來變 ISO 字串） */
 function setup() {
@@ -82,7 +91,7 @@ function readRows_(name) {
   const header = SHEET_TABS[name];
   return values.slice(1).map(function (row) {
     const rec = {};
-    header.forEach(function (h, i) { rec[h] = row[i]; });
+    header.forEach(function (h, i) { rec[h] = normalize_(h, row[i]); });
     return rec;
   }).filter(function (r) { return String(r[header[0]]) !== ''; });
 }
