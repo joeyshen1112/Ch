@@ -5,6 +5,7 @@ import { expenseTotals, toTWD, todayStr } from '../app/expenses.js';
 test('toTWD：KRW 依匯率折算、TWD 原值、四捨五入', () => {
   assert.equal(toTWD({ amount: 18000, currency: 'KRW' }, 0.023), 414);
   assert.equal(toTWD({ amount: 500, currency: 'TWD' }, 0.023), 500);
+  assert.equal(toTWD({ amount: 100, currency: 'KRW' }, 0.023), 2); // 2.3 → 2，驗證四捨五入
 });
 
 test('expenseTotals：TWD 加總、今日小計、分類統計、排除軟刪除', () => {
