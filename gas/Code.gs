@@ -87,16 +87,23 @@ function readRows_(name) {
   }).filter(function (r) { return String(r[header[0]]) !== ''; });
 }
 
-/* 人工直接改 Sheet 時自動蓋新 updatedAt，讓手改也能同步下行 */
+/* 人工直接改 Sheet 時自動蓋新 updatedAt，讓手改也能同步下行（支援多列貼上/填滿） */
 function onEdit(e) {
   const sh = e.range.getSheet();
   const name = sh.getName();
   if (name !== 'itinerary' && name !== 'expenses') return;
-  const row = e.range.getRow();
-  if (row < 2) return;
   const col = SHEET_TABS[name].indexOf('updatedAt') + 1;
-  if (e.range.getColumn() === col) return; // 避免自我觸發
-  sh.getRange(row, col).setValue(Date.now());
+  const startCol = e.range.getColumn();
+  const endCol = startCol + e.range.getNumColumns() - 1;
+  if (startCol === col && endCol === col) return; // 只動 updatedAt 欄本身，避免手動改時間又被蓋掉
+  const startRow = Math.max(e.range.getRow(), 2); // 跳過表頭
+  const endRow = e.range.getRow() + e.range.getNumRows() - 1;
+  if (endRow < startRow) return;
+  const now = Date.now();
+  const numRows = endRow - startRow + 1;
+  const vals = [];
+  for (let i = 0; i < numRows; i++) vals.push([now]);
+  sh.getRange(startRow, col, numRows, 1).setValues(vals);
 }
 
 function checkToken_(token) {
