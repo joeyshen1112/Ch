@@ -77,6 +77,27 @@ export function papagoUrl(text) {
   return `https://papago.naver.com/?sk=zh-TW&tk=ko&st=${encodeURIComponent(text)}`;
 }
 
+/* ---------- 語音（Web Speech API；iOS 用系統韓文語音，離線可用） ---------- */
+let koVoice = null;
+function pickVoice_() {
+  const vs = speechSynthesis.getVoices();
+  koVoice = vs.find(v => v.lang === 'ko-KR') || vs.find(v => v.lang && v.lang.startsWith('ko')) || null;
+}
+export function speakKo(text) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
+  speechSynthesis.cancel();
+  if (!koVoice) pickVoice_();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  if (koVoice) u.voice = koVoice;
+  u.rate = 0.85; // 稍慢，聽得清楚
+  speechSynthesis.speak(u);
+  return true;
+}
+if (typeof window !== 'undefined' && 'speechSynthesis' in window && speechSynthesis.addEventListener) {
+  speechSynthesis.addEventListener('voiceschanged', pickVoice_); // iOS 語音清單為非同步載入
+}
+
 /* ---------- UI ---------- */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -104,10 +125,11 @@ export function renderPhrases(el, engine) {
     </form>
     <div class="daychips">${chips}</div>
     <div id="phrase-list">${cards}</div>
-    <div class="foot muted" style="font-size:.74rem;padding:8px 2px 20px">點短語卡片會放大全螢幕（拿給店員看）。想加句子：直接在 Google Sheet 的 phrases 分頁新增，同步後就會出現。</div>
+    <div class="foot muted" style="font-size:.74rem;padding:8px 2px 20px">點短語卡片會放大全螢幕並自動唸出韓文（iPhone 靜音鍵開著才會出聲）。想加句子：直接在 Google Sheet 的 phrases 分頁新增，同步後就會出現。</div>
     <div id="p-big" hidden>
       <div class="p-big-ko"></div>
       <div class="p-big-zh"></div>
+      <button id="p-big-speak" class="btn" type="button" style="margin-top:26px">🔊 再聽一次</button>
       <div class="p-big-hint">點任意處關閉</div>
     </div>`;
 
@@ -123,6 +145,14 @@ export function renderPhrases(el, engine) {
     big.querySelector('.p-big-ko').textContent = p.ko;
     big.querySelector('.p-big-zh').textContent = p.zh;
     big.hidden = false;
+    speakKo(p.ko); // 開啟即自動唸一次
   });
-  big.onclick = () => { big.hidden = true; };
+  big.querySelector('#p-big-speak').onclick = ev => {
+    ev.stopPropagation();
+    speakKo(big.querySelector('.p-big-ko').textContent);
+  };
+  big.onclick = () => {
+    big.hidden = true;
+    if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+  };
 }

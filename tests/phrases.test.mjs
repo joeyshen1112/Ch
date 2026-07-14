@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BUILTIN_PHRASES, allPhrases, papagoUrl } from '../app/phrases.js';
+import { BUILTIN_PHRASES, allPhrases, papagoUrl, speakKo } from '../app/phrases.js';
 
 test('內建短語完整性：至少 45 句、五分類齊全、欄位完整', () => {
   assert.equal(BUILTIN_PHRASES.length >= 45, true);
@@ -27,4 +27,8 @@ test('allPhrases：內建與 Sheet 聯集、分類內先內建後 Sheet、略過
 test('papagoUrl 編碼', () => {
   assert.equal(papagoUrl('這個可以刷卡嗎？'),
     'https://papago.naver.com/?sk=zh-TW&tk=ko&st=' + encodeURIComponent('這個可以刷卡嗎？'));
+});
+
+test('speakKo 在無 speechSynthesis 環境安全回傳 false', () => {
+  assert.equal(speakKo('안녕하세요'), false);
 });
