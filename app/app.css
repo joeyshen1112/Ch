@@ -1,7 +1,7 @@
 /* 旅遊工具 PWA — 沿用韓紙配色 */
 :root{
   --ink:#23170f; --ink-soft:#5a4a3c; --hanji:#f4ecdd; --card:#fbf6ec;
-  --pine:#16332c; --celadon:#3c6a5d; --brass:#bf962f; --vermilion:#b23528; --line:#e2d4bd;
+  --pine:#16332c; --celadon:#3c6a5d; --brass:#bf962f; --vermilion:#b23528; --maple:#c4642a; --brass-soft:#d8b964; --line:#e2d4bd;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:"Noto Sans TC",system-ui,sans-serif;background:var(--hanji);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -40,26 +40,46 @@ dialog{border:1px solid var(--line);border-radius:14px;padding:18px;max-width:42
 dialog::backdrop{background:rgba(35,23,15,.45)}
 
 /* ---------- 行程 tab ---------- */
-.daychips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch}
-.daychip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font-size:.88rem;color:var(--ink-soft);cursor:pointer;line-height:1.2}
-.daychip small{display:block;font-size:.66rem;opacity:.75}
-.daychip.on{background:var(--pine);color:var(--hanji);border-color:var(--pine);font-weight:700}
-.daychip.today:not(.on){border-color:var(--brass);color:var(--brass);font-weight:700}
-.itcard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--dc);border-radius:11px;margin-bottom:9px}
-.itcard.done .ittitle{text-decoration:line-through;opacity:.55}
+.daychips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.daychips::-webkit-scrollbar{display:none}
+.daychip{flex:none;min-width:64px;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:8px 10px 7px;font-size:1rem;color:var(--ink-soft);cursor:pointer;line-height:1.25;text-align:center;font-family:"Noto Serif TC",serif;font-weight:700;transition:transform .15s ease}
+.daychip small{display:block;font-size:.64rem;font-weight:400;font-family:"Noto Sans TC";letter-spacing:.08em;opacity:.8;margin-top:1px}
+.daychip.on{background:var(--pine);color:var(--hanji);border-color:var(--pine);box-shadow:0 6px 16px -8px rgba(22,51,44,.55)}
+.daychip.on small{color:var(--brass-soft);opacity:1}
+.daychip.today:not(.on){border-color:var(--brass);color:var(--brass)}
+.daychip.today::after{content:"今天";display:block;font-size:.56rem;letter-spacing:.2em;color:var(--brass);font-family:"Noto Sans TC";font-weight:700;margin-top:2px}
+.daychip.on.today::after{color:var(--brass-soft)}
+.daychip:active{transform:scale(.96)}
+
+/* 時間軸 */
+#it-list{position:relative;padding:2px 0 4px 16px;margin-bottom:14px}
+#it-list::before{content:"";position:absolute;left:4px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--line) 60%,transparent 0) repeat-y;background-size:2px 9px}
+.itcard{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--dc);border-radius:13px;margin-bottom:10px;box-shadow:0 10px 26px -20px rgba(35,23,15,.5)}
+.itcard::before{content:"";position:absolute;left:-16px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--dc);box-shadow:0 0 0 2.5px var(--hanji)}
+.itcard.done{opacity:.78}
+.itcard.done .ittitle{text-decoration:line-through;text-decoration-color:var(--celadon);opacity:.6}
 .itcard.done .itnote{opacity:.45}
-.itrow{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer}
-.itdone{width:19px;height:19px;flex:none;accent-color:var(--celadon)}
-.ittime{font-family:"Noto Serif TC",serif;font-weight:700;color:var(--maple, #c4642a);font-size:.86rem;flex:none}
-.itemoji{font-size:1.15rem;flex:none}
+.itrow{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 13px;cursor:pointer}
+.itdone{appearance:none;-webkit-appearance:none;width:22px;height:22px;flex:none;border:2px solid var(--line);border-radius:50%;background:#fff;cursor:pointer;display:grid;place-content:center;margin:0}
+.itdone:checked{background:var(--celadon);border-color:var(--celadon)}
+.itdone:checked::before{content:"✓";color:#fff;font-size:.85rem;font-weight:900;line-height:1}
+.ittime{font-family:"Noto Serif TC",serif;font-weight:900;color:var(--maple);font-size:.95rem;flex:none;min-width:46px;text-align:center;letter-spacing:.02em}
+.itemoji{font-size:1.05rem;flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-content:center;background:#f6efe1;background:color-mix(in srgb, var(--dc) 14%, #fff)}
 .itmain{flex:1;min-width:0}
-.ittitle{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.itnote{font-size:.78rem;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.itmap{text-decoration:none;font-size:1.05rem;flex:none}
-.ithandle{color:#b8ad96;font-size:1.2rem;padding:4px 2px;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.itedit{border-top:1px dashed var(--line);padding:12px}
-.sortable-ghost{opacity:.4}
-.sortable-chosen{box-shadow:0 8px 24px -10px rgba(35,23,15,.5)}
+.ittitle{font-family:"Noto Serif TC",serif;font-weight:700;font-size:1.02rem;color:var(--pine);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.35}
+.itnote{font-size:.78rem;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.itmap{text-decoration:none;font-size:1.05rem;flex:none;width:34px;height:34px;display:grid;place-content:center;border:1px solid var(--line);border-radius:10px;background:#fff}
+.itmap:active{background:#f6efe1}
+.ithandle{color:#c9bda4;font-size:1.05rem;letter-spacing:-1px;padding:10px 6px;margin:-10px -2px -10px -4px;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.itedit{border-top:1px dashed var(--line);padding:13px;background:#faf5ea;border-radius:0 0 12px 12px}
+.sortable-ghost{opacity:.35}
+.sortable-chosen{box-shadow:0 16px 34px -14px rgba(35,23,15,.55)}
+.sortable-drag{opacity:.95}
+
+/* 新增表單 */
+#it-form{border-left:4px solid var(--brass)}
+#it-form::before{content:"＋ 新增行程";display:block;font-family:"Noto Serif TC",serif;font-weight:700;color:var(--pine);font-size:.95rem;margin-bottom:10px;letter-spacing:.06em}
+input:focus,select:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(191,150,47,.18)}
 .sug{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;z-index:20;box-shadow:0 10px 30px -12px rgba(35,23,15,.4);overflow:hidden}
 .sug-item{display:flex;align-items:center;gap:7px;padding:9px 11px;font-size:.88rem;cursor:pointer}
 .sug-item:hover{background:#f6efe1}
