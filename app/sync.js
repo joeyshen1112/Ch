@@ -154,6 +154,7 @@ export class SyncEngine {
       // 往回多拉 60 秒：伺服器批次寫入非原子，避免 pull 撞上寫入中的批次而永久漏掉記錄（LWW 合併具冪等性）
       const resp = await this.transport.pull(Math.max(0, this.lastSync - 60000));
       this.online = true;
+      const before = JSON.stringify(this.data); // 資料量小，直接序列化比對；重疊視窗會重複回傳相同內容
       for (const tab of ['itinerary', 'expenses']) {
         this.data[tab] = mergeServerRecords(this.data[tab], resp[tab], this.pendingKeys_(tab), 'id');
       }
@@ -162,7 +163,7 @@ export class SyncEngine {
       if (Array.isArray(resp.phrases) && resp.phrases.length > 0) this.data.phrases = resp.phrases;
       this.lastSync = Number(resp.serverTime || this.lastSync);
       this.save_();
-      this.onChange();
+      if (JSON.stringify(this.data) !== before) this.onChange();
     } catch (err) {
       this.online = false;
       if (String(err.message) === 'unauthorized') { this.status_({ unauthorized: true }); return; }

@@ -194,3 +194,15 @@ test('pull 以 lastSync-60s 的重疊視窗增量拉取', async () => {
   await e.pull();
   assert.equal(t.calls.pull[0], 40000);
 });
+
+test('pull 無實質變更時不觸發 onChange', async () => {
+  const t = fakeTransport();
+  let changes = 0;
+  const e = new SyncEngine({ transport: t, storage: memStorage(), onChange: () => { changes += 1; }, pollMs: 999999 });
+  t.pullResponse = { serverTime: 1000, itinerary: [], expenses: [{ id: 'z1', title: 'a', updatedAt: 500 }], phrases: [], settings: {} };
+  await e.pull();
+  assert.equal(changes, 1);
+  t.pullResponse = { ...t.pullResponse, serverTime: 2000 }; // 相同內容（重疊視窗重複回傳）
+  await e.pull();
+  assert.equal(changes, 1); // 不應再觸發
+});

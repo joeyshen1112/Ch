@@ -60,6 +60,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const WEEK = ['日','一','二','三','四','五','六'];
 
 let currentDay = null;
+let sortable = null; // 現任 Sortable 實例；重繪前銷毀，避免實例與 DOM 子樹洩漏
 let expandedId = null;
 export let dragState = { dragging: false, pending: null }; // Task 4 拖移時守門
 
@@ -258,8 +259,9 @@ function bindItinerary(el, engine, items) {
 /* 拖移排序：長按把手 300ms 啟動；一次拖移只寫一筆（前後中點），間距耗盡時整日重整 */
 function initDrag(el, engine) {
   const list = el.querySelector('#it-list');
+  if (sortable) { sortable.destroy(); sortable = null; }
   if (!window.Sortable || !list || !list.querySelector('.itcard')) return;
-  window.Sortable.create(list, {
+  sortable = window.Sortable.create(list, {
     handle: '.ithandle',
     draggable: '.itcard',
     animation: 150,
