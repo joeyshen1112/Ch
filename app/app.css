@@ -38,3 +38,30 @@ input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:
 /* 設定彈窗 */
 dialog{border:1px solid var(--line);border-radius:14px;padding:18px;max-width:420px;width:calc(100vw - 48px);background:var(--card)}
 dialog::backdrop{background:rgba(35,23,15,.45)}
+
+/* ---------- 行程 tab ---------- */
+.daychips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch}
+.daychip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font-size:.88rem;color:var(--ink-soft);cursor:pointer;line-height:1.2}
+.daychip small{display:block;font-size:.66rem;opacity:.75}
+.daychip.on{background:var(--pine);color:var(--hanji);border-color:var(--pine);font-weight:700}
+.daychip.today:not(.on){border-color:var(--brass);color:var(--brass);font-weight:700}
+.itcard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--dc);border-radius:11px;margin-bottom:9px}
+.itcard.done .ittitle{text-decoration:line-through;opacity:.55}
+.itcard.done .itnote{opacity:.45}
+.itrow{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer}
+.itdone{width:19px;height:19px;flex:none;accent-color:var(--celadon)}
+.ittime{font-family:"Noto Serif TC",serif;font-weight:700;color:var(--maple, #c4642a);font-size:.86rem;flex:none}
+.itemoji{font-size:1.15rem;flex:none}
+.itmain{flex:1;min-width:0}
+.ittitle{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.itnote{font-size:.78rem;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.itmap{text-decoration:none;font-size:1.05rem;flex:none}
+.ithandle{color:#b8ad96;font-size:1.2rem;padding:4px 2px;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.itedit{border-top:1px dashed var(--line);padding:12px}
+.sortable-ghost{opacity:.4}
+.sortable-chosen{box-shadow:0 8px 24px -10px rgba(35,23,15,.5)}
+.sug{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;z-index:20;box-shadow:0 10px 30px -12px rgba(35,23,15,.4);overflow:hidden}
+.sug-item{display:flex;align-items:center;gap:7px;padding:9px 11px;font-size:.88rem;cursor:pointer}
+.sug-item:hover{background:#f6efe1}
+.sug-item small{margin-left:auto;color:#9c8a72}
+.sdot{width:9px;height:9px;border-radius:50%;flex:none}

@@ -57,6 +57,7 @@
 <script type="module">
 import { SyncEngine, gasTransport, decodePairCode, LS } from './app/sync.js';
 import { renderExpenses } from './app/expenses.js';
+import { renderItinerary } from './app/itinerary.js';
 
 const $ = id => document.getElementById(id);
 let engine = null;
@@ -93,7 +94,7 @@ function renderStatus(s) {
 
 /* ---------- Tab 路由 ---------- */
 const TABS = {
-  itinerary: el => { el.innerHTML = '<div class="placeholder"><span class="e">📅</span>行程功能建置中</div>'; },
+  itinerary: el => renderItinerary(el, engine),
   expenses: el => renderExpenses(el, engine),
   phrases: el => { el.innerHTML = '<div class="placeholder"><span class="e">🇰🇷</span>韓文短語建置中</div>'; },
 };
