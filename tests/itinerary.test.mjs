@@ -54,3 +54,8 @@ test('kakaoMapUrl 編碼', () => {
   assert.equal(kakaoMapUrl('佛國寺', 35.78988, 129.33189),
     'https://map.kakao.com/link/map/%E4%BD%9B%E5%9C%8B%E5%AF%BA,35.78988,129.33189');
 });
+
+test('dayRange 拒絕月曆不存在日期、超長區間截斷 60 天', () => {
+  assert.deepEqual(dayRange('2026-02-30', '2026-03-05'), []);
+  assert.equal(dayRange('2026-01-01', '2026-12-31').length, 60);
+});

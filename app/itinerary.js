@@ -7,8 +7,10 @@ const CAT_EMOJI = { '海灘':'🏖️','觀景':'🌅','寺廟':'⛩️','咖啡
 export function dayRange(start, end) {
   const s = new Date(start + 'T00:00:00Z'), e = new Date(end + 'T00:00:00Z');
   if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime()) || e < s) return [];
+  // 拒絕月曆上不存在的日期（如 2/30 會被 JS 滾成 3/2）
+  if (s.toISOString().slice(0, 10) !== start || e.toISOString().slice(0, 10) !== end) return [];
   const out = [];
-  for (let t = s.getTime(); t <= e.getTime() && out.length < 60; t += 86400000) {
+  for (let t = s.getTime(); t <= e.getTime() && out.length < 60; t += 86400000) { // 超過 60 天截斷（防呆，非錯誤）
     out.push(new Date(t).toISOString().slice(0, 10));
   }
   return out;
