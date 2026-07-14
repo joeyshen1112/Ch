@@ -270,13 +270,15 @@ function initDrag(el, engine) {
       dragState.dragging = false;
       const pending = dragState.pending; dragState.pending = null;
       const rerenderPending = () => { if (pending) renderItinerary(pending.el, pending.engine); };
-      if (evt.oldIndex === evt.newIndex) { rerenderPending(); return; }
+      const oldIndex = evt.oldDraggableIndex, newIndex = evt.newDraggableIndex;
+      if (oldIndex === newIndex) { rerenderPending(); return; }
       const items = sortedDayItems(engine.data.itinerary, currentDay);
-      const moved = items[evt.oldIndex];
-      if (!moved) { rerenderPending(); return; }
-      const rest = items.filter((_, i) => i !== evt.oldIndex);
-      rest.splice(evt.newIndex, 0, moved);
-      const prev = rest[evt.newIndex - 1], next = rest[evt.newIndex + 1];
+      const moved = items[oldIndex];
+      // 拖移期間資料若被另一台裝置改動，索引可能對到錯的卡片——用 data-id 驗證，失配就放棄寫入並重繪還原
+      if (!moved || moved.id !== evt.item.dataset.id) { renderItinerary(el, engine); return; }
+      const rest = items.filter((_, i) => i !== oldIndex);
+      rest.splice(newIndex, 0, moved);
+      const prev = rest[newIndex - 1], next = rest[newIndex + 1];
       const order = midpoint(prev ? prev.sortOrder : null, next ? next.sortOrder : null);
       const collide = (prev && Math.abs(order - Number(prev.sortOrder)) < 1e-6)
                    || (next && Math.abs(order - Number(next.sortOrder)) < 1e-6);
