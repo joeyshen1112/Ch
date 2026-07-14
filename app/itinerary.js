@@ -255,5 +255,37 @@ function bindItinerary(el, engine, items) {
   };
 }
 
-/* Task 4 覆寫；本 task 先佔位避免 ReferenceError */
-function initDrag(el, engine) {}
+/* 拖移排序：長按把手 300ms 啟動；一次拖移只寫一筆（前後中點），間距耗盡時整日重整 */
+function initDrag(el, engine) {
+  const list = el.querySelector('#it-list');
+  if (!window.Sortable || !list || !list.querySelector('.itcard')) return;
+  window.Sortable.create(list, {
+    handle: '.ithandle',
+    draggable: '.itcard',
+    animation: 150,
+    delay: 300,
+    delayOnTouchOnly: false,
+    onStart() { dragState.dragging = true; },
+    onEnd(evt) {
+      dragState.dragging = false;
+      const pending = dragState.pending; dragState.pending = null;
+      const rerenderPending = () => { if (pending) renderItinerary(pending.el, pending.engine); };
+      if (evt.oldIndex === evt.newIndex) { rerenderPending(); return; }
+      const items = sortedDayItems(engine.data.itinerary, currentDay);
+      const moved = items[evt.oldIndex];
+      if (!moved) { rerenderPending(); return; }
+      const rest = items.filter((_, i) => i !== evt.oldIndex);
+      rest.splice(evt.newIndex, 0, moved);
+      const prev = rest[evt.newIndex - 1], next = rest[evt.newIndex + 1];
+      const order = midpoint(prev ? prev.sortOrder : null, next ? next.sortOrder : null);
+      const collide = (prev && Math.abs(order - Number(prev.sortOrder)) < 1e-6)
+                   || (next && Math.abs(order - Number(next.sortOrder)) < 1e-6);
+      if (collide) {
+        renormalize(rest).forEach(r => engine.upsert('itinerary', { ...r, updatedAt: Date.now() })); // 整日重整（≤數十筆，一批送出）
+      } else {
+        engine.upsert('itinerary', { ...moved, sortOrder: order, updatedAt: Date.now() });
+      }
+      // upsert 的 onChange 會同步重繪，把 Sortable 動過的 DOM 重建為一致狀態
+    },
+  });
+}
