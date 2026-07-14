@@ -90,7 +90,7 @@ export function speakKo(text) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'ko-KR';
   if (koVoice) u.voice = koVoice;
-  u.rate = 0.85; // 稍慢，聽得清楚
+  u.rate = 1.0; // 自然語速（偏慢會放大合成感）
   speechSynthesis.speak(u);
   return true;
 }
