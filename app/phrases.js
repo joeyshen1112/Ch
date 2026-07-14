@@ -34,7 +34,7 @@ export const BUILTIN_PHRASES = [
   { category: '購物', zh: '可以試穿嗎？', ko: '입어 봐도 돼요?', roman: 'i-beo bwa-do dwae-yo' },
   { category: '購物', zh: '有別的顏色嗎？', ko: '다른 색 있어요?', roman: 'da-reun saek i-sseo-yo' },
   { category: '購物', zh: '有更大的尺寸嗎？', ko: '더 큰 사이즈 있어요?', roman: 'deo keun sa-i-jeu i-sseo-yo' },
-  { category: '購物', zh: '我要退稅', ko: '텍스 리펀 해주세요', roman: 'tek-seu ri-peon hae-ju-se-yo' },
+  { category: '購物', zh: '我要退稅', ko: '택스 리펀 해주세요', roman: 'taek-seu ri-peon hae-ju-se-yo' },
   { category: '購物', zh: '只是看看', ko: '그냥 구경할게요', roman: 'geu-nyang gu-gyeong-hal-ge-yo' },
   { category: '購物', zh: '請給我袋子', ko: '봉투 주세요', roman: 'bong-tu ju-se-yo' },
   { category: '購物', zh: '這是什麼？', ko: '이게 뭐예요?', roman: 'i-ge mwo-ye-yo' },

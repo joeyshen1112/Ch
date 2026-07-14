@@ -13,10 +13,11 @@ const SHELL = [
   './app/vendor/Sortable.min.js',
   './app/icons/icon-192.png',
   './app/icons/icon-512.png',
+  './app/icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -31,6 +32,10 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return; // GAS、Google Fonts 等交給網路
+  // 只接管 App 本體；內容頁（index/busan/gyeongju.html）永遠走網路，避免被凍結在舊版
+  const p = url.pathname;
+  const isApp = p.endsWith('/app.html') || p.endsWith('/manifest.json') || p.includes('/app/');
+  if (!isApp) return;
   e.respondWith(
     caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
       if (res.ok) {
