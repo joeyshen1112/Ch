@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+  <rect width="512" height="512" fill="#16332c"/>
+  <rect x="106" y="106" width="300" height="300" rx="34" fill="#b23528" transform="rotate(-5 256 256)"/>
+  <text x="256" y="268" font-family="PingFang TC, Heiti TC, sans-serif" font-size="200" font-weight="900" fill="#fbf6ec" text-anchor="middle" dominant-baseline="middle">釜</text>
+</svg>
