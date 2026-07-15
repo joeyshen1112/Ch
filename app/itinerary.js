@@ -59,6 +59,23 @@ export function kakaoMapUrl(name, lat, lng) {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const WEEK = ['日','一','二','三','四','五','六'];
 
+const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const MINS = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+/* 24 小時制雙下拉時間選擇器；value 為 'HH:mm' 或 ''；非 5 分倍數的分鐘保留為額外選項 */
+function timePickerHTML(prefix, value) {
+  const [h, m] = (value || '').split(':');
+  const opts = (list, sel, blank) => {
+    const items = sel && !list.includes(sel) ? [sel, ...list] : list;
+    return `<option value="">${blank}</option>` + items.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}</option>`).join('');
+  };
+  return `<select id="${prefix}-hh" class="tsel">${opts(HOURS, h || '', '時')}</select><span class="tcolon">:</span><select id="${prefix}-mm" class="tsel">${opts(MINS, m || '', '分')}</select>`;
+}
+function readTime(scope, prefix) {
+  const hh = scope.querySelector('#' + prefix + '-hh').value;
+  const mm = scope.querySelector('#' + prefix + '-mm').value;
+  return hh === '' ? '' : hh + ':' + (mm || '00');
+}
+
 let currentDay = null;
 let sortable = null; // 現任 Sortable 實例；重繪前銷毀，避免實例與 DOM 子樹洩漏
 let expandedId = null;
@@ -90,7 +107,7 @@ export function renderItinerary(el, engine) {
   if (el.querySelector('#it-form')) {
     const active = document.activeElement;
     saved = {
-      time: el.querySelector('#it-time').value,
+      time: readTime(el, 'itt'),
       title: el.querySelector('#it-title').value,
       note: el.querySelector('#it-note').value,
       spotId: el.querySelector('#it-form').dataset.spotId || '',
@@ -125,7 +142,7 @@ export function renderItinerary(el, engine) {
       <div class="itedit">
         <div style="display:flex;gap:8px">
           <input type="date" class="ie-day" value="${esc(r.day)}" style="flex:1.4">
-          <input type="time" class="ie-time" value="${esc(r.time || '')}" style="flex:1">
+          <div class="tpick" style="flex:1">${timePickerHTML('ie', r.time || '')}</div>
         </div>
         <input class="ie-title" value="${esc(r.title)}" placeholder="標題" style="margin-top:8px">
         <input class="ie-note" value="${esc(r.note || '')}" placeholder="備註" style="margin-top:8px">
@@ -142,7 +159,7 @@ export function renderItinerary(el, engine) {
     <div id="it-list">${cards || '<div class="placeholder"><span class="e">📅</span>這天還沒有行程，從下方加入</div>'}</div>
     <form class="card" id="it-form" data-spot-id="">
       <div style="display:flex;gap:8px">
-        <input type="time" id="it-time" style="flex:1">
+        <div class="tpick" style="flex:1.2">${timePickerHTML('itt', '')}</div>
         <div style="flex:2.4;position:relative">
           <input id="it-title" placeholder="標題（輸入可搜尋景點庫）" autocomplete="off" required>
           <div id="it-sug" class="sug" hidden></div>
@@ -156,7 +173,8 @@ export function renderItinerary(el, engine) {
   el.querySelector('#it-daylabel').textContent = currentDay.slice(5).replace('-', '/');
 
   if (saved) {
-    el.querySelector('#it-time').value = saved.time;
+    const [sh, sm] = (saved.time || '').split(':');
+    if (sh) { el.querySelector('#itt-hh').value = sh; el.querySelector('#itt-mm').value = sm || '00'; }
     el.querySelector('#it-title').value = saved.title;
     el.querySelector('#it-note').value = saved.note;
     el.querySelector('#it-form').dataset.spotId = saved.spotId;
@@ -198,7 +216,7 @@ function bindItinerary(el, engine, items) {
     if (save) {
       save.onclick = () => {
         const day = card.querySelector('.ie-day').value || r.day;
-        const time = card.querySelector('.ie-time').value;
+        const time = readTime(card, 'ie');
         const title = card.querySelector('.ie-title').value.trim() || r.title;
         const note = card.querySelector('.ie-note').value.trim();
         let sortOrder = r.sortOrder;
@@ -242,11 +260,12 @@ function bindItinerary(el, engine, items) {
     ev.preventDefault();
     const title = titleInput.value.trim();
     if (!title) return;
-    const time = el.querySelector('#it-time').value;
+    const time = readTime(el, 'itt');
     const note = el.querySelector('#it-note').value.trim();
     const spotId = form.dataset.spotId || '';
     // 先清欄位再 upsert：onChange 會同步重繪，否則 capture/restore 會把剛送出的值復活
-    titleInput.value = ''; el.querySelector('#it-note').value = ''; el.querySelector('#it-time').value = '';
+    titleInput.value = ''; el.querySelector('#it-note').value = '';
+    el.querySelector('#itt-hh').value = ''; el.querySelector('#itt-mm').value = '';
     form.dataset.spotId = ''; showLinked(el, null); sug.hidden = true;
     engine.upsert('itinerary', {
       id: crypto.randomUUID(), day: currentDay, time, title, spotId, note,
