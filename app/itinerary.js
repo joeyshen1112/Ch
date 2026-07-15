@@ -66,7 +66,7 @@ function timePickerHTML(prefix, value) {
   const [h, m] = (value || '').split(':');
   const opts = (list, sel, blank) => {
     const items = sel && !list.includes(sel) ? [sel, ...list] : list;
-    return `<option value="">${blank}</option>` + items.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}</option>`).join('');
+    return `<option value="">${blank}</option>` + items.map(v => `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(v)}</option>`).join('');
   };
   return `<select id="${prefix}-hh" class="tsel">${opts(HOURS, h || '', '時')}</select><span class="tcolon">:</span><select id="${prefix}-mm" class="tsel">${opts(MINS, m || '', '分')}</select>`;
 }
