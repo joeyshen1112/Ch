@@ -130,8 +130,8 @@
   .stage{
     grid-row:1;grid-column:1/-1;
     margin:0 -10px;
-    position:relative;height:0;padding-bottom:100%;
-    background:var(--tulle);overflow:hidden;
+    position:relative;height:0;padding-bottom:125%;
+    background:#fff;overflow:hidden;
   }
   .stage .ph{
     position:absolute;inset:0;
@@ -141,7 +141,7 @@
   }
   .stage img{
     position:absolute;inset:0;width:100%;height:100%;
-    object-fit:cover;background:transparent;
+    object-fit:contain;background:transparent;
     opacity:0;transition:opacity .3s ease;
   }
   .gal input{
@@ -149,8 +149,8 @@
     appearance:none;-webkit-appearance:none;
     margin:0;padding:0 0 100% 0;width:100%;height:0;min-width:0;
     border:1px solid var(--line);border-radius:3px;
-    background-color:var(--tulle);
-    background-size:cover;background-position:center;
+    background-color:#fff;
+    background-size:contain;background-repeat:no-repeat;background-position:center;
     cursor:pointer;opacity:.55;
     transition:opacity .2s ease,border-color .2s ease,box-shadow .2s ease;
   }
