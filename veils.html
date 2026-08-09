@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>頭紗比較 · Veils Wedding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,300&family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#262130;
+    --ink-soft:#6A6079;
+    --ink-faint:#9A93A6;
+    --ground:#F5F3F6;
+    --card:#FFFFFF;
+    --tulle:#E9E2EC;
+    --accent:#7A6A96;
+    --blush:#E5D2D6;
+    --line:#E2DDE8;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Heiti TC","Microsoft JhengHei",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:400;
+    line-height:1.75;
+  }
+
+  /* ---------- 標頭 ---------- */
+  header{
+    position:relative;
+    overflow:hidden;
+    padding:64px 24px 48px;
+    text-align:center;
+    background:
+      radial-gradient(ellipse 760px 420px at 50% -60px, rgba(222,215,230,.9), rgba(222,215,230,0) 70%),
+      radial-gradient(ellipse 1000px 520px at 50% -20px, rgba(229,210,214,.5), rgba(229,210,214,0) 68%);
+  }
+  .eyebrow{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-style:italic;
+    font-size:18px;
+    letter-spacing:.14em;
+    color:var(--accent);
+    margin:0 0 12px;
+  }
+  h1{
+    font-family:"Noto Serif TC","Songti TC","PingFang TC",serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,42px);
+    letter-spacing:.08em;
+    margin:0 0 16px;
+    line-height:1.35;
+  }
+  .sub{
+    max-width:480px;
+    margin:0 auto;
+    font-size:15px;
+    color:var(--ink-soft);
+  }
+  .shopline{
+    margin:26px auto 0;
+    max-width:420px;
+    padding:12px 20px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:rgba(255,255,255,.78);
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  .shopline b{font-weight:600;color:var(--ink);font-size:15px;}
+  .star{color:var(--accent);}
+
+  /* ---------- 長度一覽 ---------- */
+  .ruler{max-width:1120px;margin:0 auto;padding:36px 24px 8px;}
+  .ruler-inner{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:24px 22px 26px;
+  }
+  .ruler h2{
+    font-size:15px;font-weight:600;letter-spacing:.14em;margin:0 0 4px;
+  }
+  .ruler > .ruler-inner > p{margin:0 0 22px;font-size:13px;color:var(--ink-faint);}
+  .row{margin-bottom:18px;}
+  .row:last-of-type{margin-bottom:8px;}
+  .row-head{
+    display:flex;align-items:baseline;gap:9px;
+    font-size:13.5px;margin-bottom:7px;
+  }
+  .row-head .num{
+    font-family:"Cormorant Garamond",Georgia,serif;font-size:14px;color:var(--accent);font-weight:600;
+  }
+  .row-head .nm{font-weight:500;}
+  .row-head .len{margin-left:auto;color:var(--ink-soft);font-size:12.5px;white-space:nowrap;}
+  .track{
+    position:relative;height:9px;border-radius:5px;background:var(--tulle);overflow:hidden;
+  }
+  .seg{position:absolute;top:0;bottom:0;background:var(--accent);border-radius:5px;}
+  .axis{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--ink-faint);letter-spacing:.04em;}
+
+  /* ---------- 商品卡 ---------- */
+  main{max-width:1120px;margin:0 auto;padding:22px 24px 70px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .shot{
+    position:relative;
+    aspect-ratio:1/1;
+    background:var(--tulle);
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;
+  }
+  .shot .ph{
+    padding:24px;font-size:12.5px;color:var(--ink-faint);line-height:1.8;
+  }
+  .shot img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    background:transparent;
+  }
+  .thumbs{display:flex;gap:6px;padding:9px 9px 0;}
+  .thumbs .th{
+    position:relative;
+    flex:1;aspect-ratio:1/1;
+    border:1px solid var(--line);border-radius:2px;
+    background:var(--tulle);overflow:hidden;
+  }
+  .thumbs .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent;}
+
+  .body{padding:18px 20px 22px;display:flex;flex-direction:column;flex:1;}
+  .badge{
+    font-family:"Cormorant Garamond",Georgia,serif;font-size:12px;letter-spacing:.16em;
+    color:var(--accent);margin:0 0 8px;font-weight:600;
+  }
+  .name{
+    font-family:"Noto Serif TC","Songti TC","PingFang TC",serif;
+    font-weight:600;font-size:16px;line-height:1.7;letter-spacing:.02em;
+    margin:0 0 15px;
+  }
+  dl{margin:0 0 16px;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13.5px;}
+  dt{color:var(--ink-faint);letter-spacing:.14em;font-size:11.5px;padding-top:3px;white-space:nowrap;}
+  dd{margin:0;line-height:1.7;}
+  dd .note{color:var(--ink-faint);font-size:12.5px;}
+
+  .voices{border-top:1px solid var(--line);padding-top:15px;margin-bottom:18px;}
+  .voices h3{font-size:11.5px;letter-spacing:.14em;color:var(--ink-faint);font-weight:400;margin:0 0 10px;}
+  .voices ul{margin:0;padding:0;list-style:none;}
+  .voices li{
+    font-size:13px;line-height:1.75;color:var(--ink-soft);
+    padding-left:15px;position:relative;margin-bottom:8px;
+  }
+  .voices li:last-child{margin-bottom:0;}
+  .voices li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--blush);}
+  .voices li.caution{color:var(--ink);}
+  .voices li.caution::before{background:var(--accent);height:2px;top:10px;}
+  .empty{font-size:13px;color:var(--ink-faint);margin:0;}
+
+  .foot{
+    margin-top:auto;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;
+  }
+  .rating{font-size:12px;color:var(--ink-faint);line-height:1.7;}
+  .rating b{font-size:16px;color:var(--accent);font-weight:600;}
+  .go{
+    font-size:13px;letter-spacing:.06em;color:var(--ink);
+    text-decoration:none;border-bottom:1.5px solid var(--accent);
+    padding-bottom:3px;white-space:nowrap;
+  }
+
+  footer{max-width:1120px;margin:0 auto;padding:0 24px 60px;font-size:12.5px;color:var(--ink-faint);line-height:1.9;}
+  footer hr{border:0;border-top:1px solid var(--line);margin:0 0 20px;}
+
+  @media (max-width:640px){
+    header{padding:48px 22px 40px;}
+    .ruler{padding:26px 18px 4px;}
+    main{padding:18px 18px 50px;}
+    .ruler-inner{padding:20px 16px 22px;}
+    .row-head{flex-wrap:wrap;gap:6px;}
+    .row-head .len{margin-left:0;width:100%;}
+    footer{padding:0 18px 46px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Veils Wedding</p>
+  <h1>頭紗比較清單</h1>
+  <p class="sub">四款短至中長的白色頭紗，同一家賣場、皆可官方直郵寄台灣。以下資料全部取自各商品頁面。</p>
+  <div class="shopline">
+    賣場評分 <span class="star">★</span> <b>4.9</b><br>
+    平均 17 小時發貨 · 90 天新增 62 條好評
+  </div>
+</header>
+
+<section class="ruler">
+  <div class="ruler-inner">
+    <h2>長度一覽</h2>
+    <p>四款之間最主要的差別就是長度，先看落點再看細節。</p>
+
+    <div class="row">
+      <div class="row-head"><span class="num">03</span><span class="nm">蓬蓬短頭紗</span><span class="len">60cm 以下</span></div>
+      <div class="track"><div class="seg" style="left:0%;right:40%"></div></div>
+    </div>
+    <div class="row">
+      <div class="row-head"><span class="num">04</span><span class="nm">蝴蝶結短頭紗</span><span class="len">60cm 以下</span></div>
+      <div class="track"><div class="seg" style="left:0%;right:40%"></div></div>
+    </div>
+    <div class="row">
+      <div class="row-head"><span class="num">01</span><span class="nm">緞帶包邊頭紗</span><span class="len">60–80cm</span></div>
+      <div class="track"><div class="seg" style="left:60%;right:20%"></div></div>
+    </div>
+    <div class="row">
+      <div class="row-head"><span class="num">02</span><span class="nm">花朵珍珠頭紗</span><span class="len">80–100cm</span></div>
+      <div class="track"><div class="seg" style="left:80%;right:0%"></div></div>
+    </div>
+
+    <div class="axis"><span>0</span><span>50cm</span><span>100cm</span></div>
+  </div>
+</section>
+
+<main>
+<div class="grid">
+
+  <!-- 01 -->
+  <article class="card">
+    <div class="shot">
+      <div class="ph">圖片需連網載入<br>可點下方連結看完整圖集</div>
+      <img src="https://img.alicdn.com/imgextra/i3/4185732216/O1CN01eSMJzl1SEyNXDZ4kB_!!4185732216.jpg_600x600q80.jpg" alt="緞帶包邊頭紗">
+    </div>
+    <div class="thumbs">
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i4/4185732216/O1CN010IMGet1SEyNWevElz_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i4/4185732216/O1CN01OE0HXc1SEyNY505kx_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i4/4185732216/O1CN01ATINlp1SEyNaylkyL_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+    </div>
+    <div class="body">
+      <p class="badge">01</p>
+      <h3 class="name">Veils 法式簡約復古白色緞帶包邊新娘頭飾 婚紗頭紗 領證拍照道具</h3>
+      <dl>
+        <dt>長度</dt><dd>60cm–80cm</dd>
+        <dt>材質</dt><dd>軟紗</dd>
+        <dt>款式</dt><dd>白色普通款 · 白色升級款（手縫金屬髮梳，質感更好）<br><span class="note">上市：2024 年春季 · 已售 300+</span></dd>
+      </dl>
+      <div class="voices">
+        <h3>買家回饋重點</h3>
+        <ul>
+          <li>有封邊顯得高級又大方，不會太複雜也不會太簡單</li>
+          <li>大小、長度都正好，還附送夾子</li>
+          <li>材質偏軟但很立體、有支撐力</li>
+          <li class="caution">買家提醒：當婚禮頭紗可能稍短，拍婚紗照效果不錯</li>
+        </ul>
+      </div>
+      <div class="foot">
+        <span class="rating"><b>★ 4.9</b><br>好評率 100% · 評價 100+</span>
+        <a class="go" href="https://item.taobao.com/item.htm?id=651700044126&amp;mi_id=00004sS6hnSWG-eaAmsJVtTJfvrWmE5owAdMOaTN04pG_nw&amp;skuId=5804668240657&amp;spm=a21xtw.29978516.0.0&amp;xxc=shop" target="_blank" rel="noopener noreferrer">看商品頁 →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- 02 -->
+  <article class="card">
+    <div class="shot">
+      <div class="ph">圖片需連網載入<br>可點下方連結看完整圖集</div>
+      <img src="https://img.alicdn.com/imgextra/i1/4185732216/O1CN01FdDCQv1SEyVhykhcq_!!4185732216.jpg_600x600q80.jpg" alt="花朵珍珠頭紗">
+    </div>
+    <div class="thumbs">
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i1/4185732216/O1CN01otYkEL1SEyVbI2L2i_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i3/4185732216/O1CN0106rvZ11SEyVcjNGs2_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i1/4185732216/O1CN017UHoie1SEyVcjSdm4_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+    </div>
+    <div class="body">
+      <p class="badge">02</p>
+      <h3 class="name">Veils 新款白色雙層小清新花朵珍珠頭紗 新娘領證 戶外婚禮森系頭飾</h3>
+      <dl>
+        <dt>長度</dt><dd>80cm–100cm</dd>
+        <dt>材質</dt><dd>軟紗</dd>
+        <dt>款式</dt><dd>白色（另有「拍前必讀」選項）<br><span class="note">上市：2024 年夏季 · 已售 600+</span></dd>
+      </dl>
+      <div class="voices">
+        <h3>買家回饋重點</h3>
+        <ul>
+          <li>刺繡小花挺精緻的，女朋友很喜歡</li>
+          <li>戴著很舒服，不扎人</li>
+        </ul>
+      </div>
+      <div class="foot">
+        <span class="rating"><b>★ 4.9</b><br>好評率 100% · 評價 100+</span>
+        <a class="go" href="https://item.taobao.com/item.htm?id=711403667704&amp;mi_id=0000Cluk49t0yedxiH0EGOyqzGPMXSkIwZGF-cyNH0zJ6B8&amp;spm=a21xtw.29978516.0.0&amp;xxc=shop&amp;sku_properties=122216547%3A12409993" target="_blank" rel="noopener noreferrer">看商品頁 →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- 03 -->
+  <article class="card">
+    <div class="shot">
+      <div class="ph">圖片需連網載入<br>可點下方連結看完整圖集</div>
+      <img src="https://img.alicdn.com/imgextra/i2/4185732216/O1CN01UShnpO1SEyLvV5LT5_!!0-item_pic.jpg_600x600q80.jpg" alt="蓬蓬短頭紗">
+    </div>
+    <div class="thumbs">
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i3/4185732216/O1CN01GiiQFk1SEyLhc9Vy6_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i1/4185732216/O1CN01QicjWw1SEyLoMovsr_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i2/4185732216/O1CN016btkT21SEyLhTGoao_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+    </div>
+    <div class="body">
+      <p class="badge">03</p>
+      <h3 class="name">超仙森系可愛雙層緞帶包邊短款蓬蓬頭紗 新娘頭飾 領證登記拍照道具</h3>
+      <dl>
+        <dt>長度</dt><dd>60cm 以下</dd>
+        <dt>材質</dt><dd>軟紗</dd>
+        <dt>款式</dt><dd>白色（單一款式）<br><span class="note">已售 37 · 商品頁附 58 秒影片</span></dd>
+      </dl>
+      <div class="voices">
+        <h3>買家回饋重點</h3>
+        <p class="empty">商品頁目前沒有展開評價內容，只顯示 23 則評價。</p>
+      </div>
+      <div class="foot">
+        <span class="rating"><b>★ 4.9</b><br>評價 23 則</span>
+        <a class="go" href="https://item.taobao.com/item.htm?id=640745662212&amp;mi_id=0000l4Z_2K4d6fRXC5vDoH5a2CP297joRnZkF19slZNJIKw&amp;spm=a21xtw.29978516.0.0&amp;xxc=shop&amp;skuId=4602896585637" target="_blank" rel="noopener noreferrer">看商品頁 →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- 04 -->
+  <article class="card">
+    <div class="shot">
+      <div class="ph">圖片需連網載入<br>可點下方連結看完整圖集</div>
+      <img src="https://img.alicdn.com/imgextra/i3/4185732216/O1CN01QPgmKy1SEyNCKTb5f_!!4185732216.jpg_600x600q80.jpg" alt="蝴蝶結短頭紗">
+    </div>
+    <div class="thumbs">
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i3/4185732216/O1CN01k2obKn1SEyNI4JK13_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i2/4185732216/O1CN01lnyHkN1SEyNDnibze_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+      <div class="th"><img src="https://img.alicdn.com/imgextra/i2/4185732216/O1CN01ODDGUk1SEyNJF6pqC_!!4185732216.jpg_200x200q75.jpg" alt=""></div>
+    </div>
+    <div class="body">
+      <p class="badge">04</p>
+      <h3 class="name">蝴蝶結短款頭紗 新娘頭飾 網紅拍照求婚道具 法式白色小頭紗 領證登記</h3>
+      <dl>
+        <dt>長度</dt><dd>60cm 以下</dd>
+        <dt>材質</dt><dd>軟紗</dd>
+        <dt>款式</dt><dd>白色（另有「資訊說明」選項）<br><span class="note">上市：2023 年夏季 · 已售 800+ · 超 800 人加購</span></dd>
+      </dl>
+      <div class="voices">
+        <h3>買家回饋重點</h3>
+        <ul>
+          <li>評價標籤集中在「質感很好」、「質量很好」、「百搭好看」</li>
+          <li>收到後感覺質量不錯，挺滿意的</li>
+          <li>實物跟照片一樣，很推薦購買</li>
+          <li>商品頁附 24 秒影片可看實際垂墜感</li>
+        </ul>
+      </div>
+      <div class="foot">
+        <span class="rating"><b>★ 4.9</b><br>好評率 100% · 評價 300+</span>
+        <a class="go" href="https://item.taobao.com/item.htm?id=625562604896&amp;mi_id=0000vn30uGZ_9hVXQu5YyxVHKZGGWS38guz0z4zLAs6Nn00&amp;spm=a21xtw.29978516.0.0&amp;xxc=shop&amp;sku_properties=122216547%3A12409991" target="_blank" rel="noopener noreferrer">看商品頁 →</a>
+      </div>
+    </div>
+  </article>
+
+</div>
+</main>
+
+<footer>
+  <hr>
+  <p>商品名稱已轉為繁體以便閱讀，其餘規格與評價內容皆照原頁面呈現。價格、庫存會變動，請以商品頁當下顯示為準。<br>
+  圖片直接連結淘寶圖床，需要連網才會顯示；若某張圖沒出現，點該商品的連結一樣看得到完整圖集。</p>
+</footer>
+
+</body>
+</html>
