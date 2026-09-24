@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor, chipScrollTarget } from '../app/itinerary.js';
+import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor, chipScrollTarget, splitTitleEmoji } from '../app/itinerary.js';
 
 test('dayRange 起訖含端點', () => {
   const days = dayRange('2026-10-22', '2026-10-29');
@@ -117,4 +117,30 @@ test('chipScrollTarget：chip 在可視範圍右邊時捲過去並置中', () =>
 test('chipScrollTarget：永遠不回傳負數', () => {
   assert.equal(chipScrollTarget(500, 300, 0, 64), 0);
   assert.ok(chipScrollTarget(0, 300, 0, 400) >= 0);           // chip 比容器寬的極端情況
+});
+
+/* ---------- 標題開頭的 emoji 抽出來放到色塊 ---------- */
+
+test('splitTitleEmoji 抽出開頭 emoji 並從標題移除', () => {
+  assert.deepEqual(splitTitleEmoji('🚌 慶州一日遊 集合'), { emoji: '🚌', text: '慶州一日遊 集合' });
+  assert.deepEqual(splitTitleEmoji('🥐早餐 前天買的麵包'), { emoji: '🥐', text: '早餐 前天買的麵包' });
+});
+
+test('splitTitleEmoji 處理變異選擇器與旗幟', () => {
+  assert.deepEqual(splitTitleEmoji('⛩️ 海東龍宮寺'), { emoji: '⛩️', text: '海東龍宮寺' });
+  assert.deepEqual(splitTitleEmoji('✈️ CI190 桃園T1 → 釜山金海'), { emoji: '✈️', text: 'CI190 桃園T1 → 釜山金海' });
+  assert.deepEqual(splitTitleEmoji('🇰🇷 韓文練習'), { emoji: '🇰🇷', text: '韓文練習' });
+});
+
+test('splitTitleEmoji 只認開頭，不動標題中間或結尾的 emoji', () => {
+  assert.deepEqual(splitTitleEmoji('回到西面 🚌'), { emoji: '', text: '回到西面 🚌' });
+  assert.deepEqual(splitTitleEmoji('午餐（二選一）'), { emoji: '', text: '午餐（二選一）' });
+  assert.deepEqual(splitTitleEmoji('Skyline Luge 斜坡滑車'), { emoji: '', text: 'Skyline Luge 斜坡滑車' });
+});
+
+test('splitTitleEmoji 對空值安全', () => {
+  assert.deepEqual(splitTitleEmoji(''), { emoji: '', text: '' });
+  assert.deepEqual(splitTitleEmoji(null), { emoji: '', text: '' });
+  assert.deepEqual(splitTitleEmoji(undefined), { emoji: '', text: '' });
+  assert.deepEqual(splitTitleEmoji('🧳'), { emoji: '🧳', text: '' });
 });

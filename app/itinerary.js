@@ -59,6 +59,17 @@ export function kakaoMapUrl(name, lat, lng) {
  * mapUrl 只收 http/https——Sheet 可被手改，javascript: 會變成 XSS。 */
 /* 日期 chips 的目標捲動位置：已在可視範圍內就原地不動，否則置中。
  * 重繪會重建捲動容器（scrollLeft 歸零），所以每次都要重新算。 */
+/* 標題開頭的 emoji 抽出來顯示在色塊裡，標題只留文字——使用者習慣把 emoji 打在標題前面。
+ * 涵蓋變異選擇器（⛩️）、膚色、ZWJ 組合與旗幟；只認開頭，結尾的 emoji 不動。 */
+const LEAD_EMOJI = /^\s*((?:\p{RI}{2})|(?:\p{Extended_Pictographic}(?:\p{Emoji_Modifier}|️)?(?:‍\p{Extended_Pictographic}(?:\p{Emoji_Modifier}|️)?)*))\s*/u;
+
+export function splitTitleEmoji(title) {
+  const s = String(title ?? '');
+  const m = LEAD_EMOJI.exec(s);
+  if (!m) return { emoji: '', text: s };
+  return { emoji: m[1], text: s.slice(m[0].length).trim() };
+}
+
 export function chipScrollTarget(scrollLeft, boxWidth, chipLeft, chipWidth) {
   const visible = chipLeft >= scrollLeft && chipLeft + chipWidth <= scrollLeft + boxWidth;
   if (visible) return scrollLeft;
@@ -169,23 +180,26 @@ export function renderItinerary(el, engine) {
 
   const cards = items.map(r => {
     const spot = r.spotId ? SPOTS.find(s => s.id === r.spotId) : null;
-    const emoji = spot ? (CAT_EMOJI[spot.cat] || '📍') : '📝';
+    // 標題開頭的 emoji 優先；沒有就用景點分類；都沒有給個中性預設
+    const { emoji: leadEmoji, text: titleText } = splitTitleEmoji(r.title);
+    const emoji = leadEmoji || (spot ? (CAT_EMOJI[spot.cat] || '📍') : '📌');
     const mapLink = mapLinkFor(r, spot);
     const open = expandedId === r.id;
     return `
     <div class="itcard${Number(r.done) === 1 ? ' done' : ''}${open ? ' open' : ''}" data-id="${esc(r.id)}" style="--dc:${spot ? spot.c : 'var(--line)'}">
-      <div class="itrow">
+      <div class="ithdr">
         <input type="checkbox" class="itdone" ${Number(r.done) === 1 ? 'checked' : ''} title="完成">
-        <span class="ittime">${esc(r.time || '')}</span>
-        <span class="itemoji">${emoji}</span>
-        <div class="itmain"><div class="ittitle">${esc(r.title)}</div></div>
-        <span class="ithandle" title="長按拖移">≡</span>
+        <span class="itemoji">${esc(emoji)}</span>
+        ${r.time ? `<span class="ittime">${esc(r.time)}</span>` : ''}
+        <span class="itacts">
+          ${mapLink ? `<a class="itmap" href="${esc(mapLink)}" target="_blank" rel="noopener" title="開地圖">📍</a>` : ''}
+          <span class="ithandle" title="長按拖移">≡</span>
+        </span>
       </div>
-      ${r.note || mapLink ? `
-      <div class="itmeta">
-        <div class="itnote">${esc(r.note || '')}</div>
-        ${mapLink ? `<a class="itmap" href="${esc(mapLink)}" target="_blank" rel="noopener" title="開地圖">📍</a>` : ''}
-      </div>` : ''}
+      <div class="itbody">
+        <div class="ittitle">${esc(titleText || r.title)}</div>
+        ${r.note ? `<div class="itnote">${esc(r.note)}</div>` : ''}
+      </div>
       ${open ? `
       <div class="itedit">
         <div style="display:flex;gap:8px">

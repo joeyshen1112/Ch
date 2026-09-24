@@ -1,10 +1,10 @@
 /* sw.js — app shell cache-first；GAS／跨域請求一律不攔截（離線寫入由 app/sync.js 佇列處理）
  * 改動 SHELL 內任何檔案時，必須 bump CACHE 版本（tt-vN）。 */
-const CACHE = 'tt-v9'; // v9: 卡片排版重整、日期 chips 不再彈回開頭
+const CACHE = 'tt-v10'; // v10: 卡片三列排版、標題 emoji 抽到色塊
 const SHELL = [
   './app.html',
   './manifest.json',
-  './app/app.css?v=7',
+  './app/app.css?v=8',
   './app/sync.js',
   './app/itinerary.js',
   './app/expenses.js',
