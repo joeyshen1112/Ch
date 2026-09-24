@@ -57,6 +57,14 @@ export function kakaoMapUrl(name, lat, lng) {
 
 /* 地圖連結三層 fallback：手貼網址 → 景點座標 → 標題搜尋。
  * mapUrl 只收 http/https——Sheet 可被手改，javascript: 會變成 XSS。 */
+/* 日期 chips 的目標捲動位置：已在可視範圍內就原地不動，否則置中。
+ * 重繪會重建捲動容器（scrollLeft 歸零），所以每次都要重新算。 */
+export function chipScrollTarget(scrollLeft, boxWidth, chipLeft, chipWidth) {
+  const visible = chipLeft >= scrollLeft && chipLeft + chipWidth <= scrollLeft + boxWidth;
+  if (visible) return scrollLeft;
+  return Math.max(0, chipLeft - (boxWidth - chipWidth) / 2);
+}
+
 export function mapLinkFor(record, spot) {
   const raw = String((record && record.mapUrl) || '').trim();
   if (raw) {
@@ -135,6 +143,10 @@ export function renderItinerary(el, engine) {
   }
   const items = sortedDayItems(engine.data.itinerary, currentDay);
 
+  // 重繪會重建 .daychips（捲動容器），先記下位置，否則每次點日期都彈回開頭
+  const chipsBox0 = el.querySelector('.daychips');
+  const savedChipsLeft = chipsBox0 ? chipsBox0.scrollLeft : null;
+
   // 保留打到一半的新增表單（背景輪詢重繪時）
   let saved = null;
   if (el.querySelector('#it-form')) {
@@ -164,15 +176,16 @@ export function renderItinerary(el, engine) {
     <div class="itcard${Number(r.done) === 1 ? ' done' : ''}${open ? ' open' : ''}" data-id="${esc(r.id)}" style="--dc:${spot ? spot.c : 'var(--line)'}">
       <div class="itrow">
         <input type="checkbox" class="itdone" ${Number(r.done) === 1 ? 'checked' : ''} title="完成">
-        ${r.time ? `<span class="ittime">${esc(r.time)}</span>` : ''}
+        <span class="ittime">${esc(r.time || '')}</span>
         <span class="itemoji">${emoji}</span>
-        <div class="itmain">
-          <div class="ittitle">${esc(r.title)}</div>
-          ${r.note ? `<div class="itnote">${esc(r.note)}</div>` : ''}
-        </div>
-        ${mapLink ? `<a class="itmap" href="${esc(mapLink)}" target="_blank" rel="noopener" title="開地圖">📍</a>` : ''}
+        <div class="itmain"><div class="ittitle">${esc(r.title)}</div></div>
         <span class="ithandle" title="長按拖移">≡</span>
       </div>
+      ${r.note || mapLink ? `
+      <div class="itmeta">
+        <div class="itnote">${esc(r.note || '')}</div>
+        ${mapLink ? `<a class="itmap" href="${esc(mapLink)}" target="_blank" rel="noopener" title="開地圖">📍</a>` : ''}
+      </div>` : ''}
       ${open ? `
       <div class="itedit">
         <div style="display:flex;gap:8px">
@@ -221,9 +234,23 @@ export function renderItinerary(el, engine) {
     if (saved.focusId) { const f = el.querySelector('#' + saved.focusId); if (f) f.focus(); }
   }
 
+  restoreChipScroll(el, savedChipsLeft);
   bindAutoGrow(el);
   bindItinerary(el, engine, items);
   initDrag(el, engine); // Task 4 實作；本 task 先放空函式
+}
+
+/* 還原 chips 捲動位置；選中的 chip 若在可視範圍外就捲到中間。
+ * 用 getBoundingClientRect 而非 offsetLeft——.daychips 沒有 position，offsetParent 不可靠。 */
+function restoreChipScroll(el, saved) {
+  const box = el.querySelector('.daychips');
+  if (!box) return;
+  if (saved != null) box.scrollLeft = saved;
+  const chip = box.querySelector('.daychip.on');
+  if (!chip) return;
+  const b = box.getBoundingClientRect(), c = chip.getBoundingClientRect();
+  const chipLeft = c.left - b.left + box.scrollLeft;
+  box.scrollLeft = chipScrollTarget(box.scrollLeft, box.clientWidth, chipLeft, c.width);
 }
 
 function showLinked(el, spot) {
@@ -244,8 +271,8 @@ function bindItinerary(el, engine, items) {
   el.querySelectorAll('.itcard').forEach(card => {
     const r = items.find(x => x.id === card.dataset.id);
     if (!r) return;
-    card.querySelector('.itrow').onclick = ev => {
-      if (ev.target.closest('.itdone,.itmap,.ithandle')) return;
+    card.onclick = ev => {
+      if (ev.target.closest('.itdone,.itmap,.ithandle,.itedit')) return;
       expandedId = expandedId === r.id ? null : r.id;
       renderItinerary(el, engine);
     };

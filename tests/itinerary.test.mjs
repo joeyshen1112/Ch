@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor } from '../app/itinerary.js';
+import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor, chipScrollTarget } from '../app/itinerary.js';
 
 test('dayRange 起訖含端點', () => {
   const days = dayRange('2026-10-22', '2026-10-29');
@@ -94,4 +94,27 @@ test('mapLinkFor 三層都沒有時回空字串（不渲染 📍）', () => {
   assert.equal(mapLinkFor({ title: '   ' }, null), '');
   assert.equal(mapLinkFor({}, null), '');
   assert.equal(mapLinkFor(null, null), '');
+});
+
+/* ---------- 日期 chips 捲動位置 ---------- */
+
+test('chipScrollTarget：選中的 chip 已在可視範圍內時維持原位，不亂跳', () => {
+  assert.equal(chipScrollTarget(100, 300, 150, 64), 100);
+  assert.equal(chipScrollTarget(0, 300, 0, 64), 0);
+  assert.equal(chipScrollTarget(100, 300, 336, 64), 100); // 剛好貼齊右緣
+});
+
+test('chipScrollTarget：chip 在可視範圍左邊時捲回來並置中', () => {
+  assert.equal(chipScrollTarget(300, 300, 50, 64), 0);        // 置中會小於 0 → 夾到 0
+  assert.equal(chipScrollTarget(300, 300, 200, 64), 82);      // 200 - (300-64)/2
+});
+
+test('chipScrollTarget：chip 在可視範圍右邊時捲過去並置中', () => {
+  assert.equal(chipScrollTarget(0, 300, 400, 64), 282);       // 400 - 118
+  assert.equal(chipScrollTarget(0, 300, 337, 64), 219);       // 超出 1px 也會捲
+});
+
+test('chipScrollTarget：永遠不回傳負數', () => {
+  assert.equal(chipScrollTarget(500, 300, 0, 64), 0);
+  assert.ok(chipScrollTarget(0, 300, 0, 400) >= 0);           // chip 比容器寬的極端情況
 });
