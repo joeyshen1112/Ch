@@ -1,6 +1,6 @@
 /* sw.js — app shell cache-first；GAS／跨域請求一律不攔截（離線寫入由 app/sync.js 佇列處理）
  * 改動 SHELL 內任何檔案時，必須 bump CACHE 版本（tt-vN）。 */
-const CACHE = 'tt-v4'; // v4: 24h 時間選擇器＋備註兩行顯示
+const CACHE = 'tt-v5'; // v5: 連結配對（#pair=）
 const SHELL = [
   './app.html',
   './manifest.json',

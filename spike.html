@@ -16,9 +16,10 @@
 <label>TOKEN</label><input id="token">
 <button id="pull">1. 測試 pull</button>
 <button id="push">2. 測試 push</button>
-<button id="pair">3. 產生配對碼</button>
+<button id="pair">3. 產生配對碼與配對連結</button>
 <pre id="log">結果會顯示在這裡</pre>
-<script>
+<script type="module">
+import { encodePairCode, pairLinkUrl } from './app/sync.js';
 const $ = id => document.getElementById(id);
 const log = v => { $('log').textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2); };
 $('pull').onclick = async () => {
@@ -36,7 +37,14 @@ $('push').onclick = async () => {
     log(await r.json());
   } catch (e) { log('FAIL: ' + e.message); }
 };
-$('pair').onclick = () => log(btoa(JSON.stringify({ url: $('url').value, token: $('token').value })));
+$('pair').onclick = () => {
+  let code;
+  try { code = encodePairCode($('url').value.trim(), $('token').value.trim()); }
+  catch (e) { log('FAIL: token 或 URL 含非 ASCII 字元（btoa 只吃 Latin1），請改用英數與符號'); return; }
+  const appUrl = location.origin + location.pathname.replace(/spike\.html$/, 'app.html');
+  log('配對碼（貼進 App 配對畫面）：\n' + code +
+      '\n\n配對連結（傳這個更省事，對方點開即完成配對）：\n' + pairLinkUrl(appUrl, code));
+};
 </script>
 </body>
 </html>

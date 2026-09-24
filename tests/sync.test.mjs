@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { encodePairCode, decodePairCode, mergeServerRecords, memStorage, SyncEngine, gasTransport } from '../app/sync.js';
+import { encodePairCode, decodePairCode, readPairFromUrl, pairLinkUrl, mergeServerRecords, memStorage, SyncEngine, gasTransport } from '../app/sync.js';
 
 test('配對碼 roundtrip', () => {
   const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
@@ -205,4 +205,38 @@ test('pull 無實質變更時不觸發 onChange', async () => {
   t.pullResponse = { ...t.pullResponse, serverTime: 2000 }; // 相同內容（重疊視窗重複回傳）
   await e.pull();
   assert.equal(changes, 1); // 不應再觸發
+});
+
+/* ---------- 連結配對（app.html#pair=<base64>） ---------- */
+
+test('pairLinkUrl 與 readPairFromUrl roundtrip：base64 的 + / = 字元不被 URL 解析破壞', () => {
+  const url = 'https://script.google.com/macros/s/AKfycbx/exec';
+  for (const token of ['a?b>c~d', 'a~b?c', 'plain-token-123']) {
+    const code = encodePairCode(url, token);
+    const link = pairLinkUrl('https://joeyshen1112.github.io/Ch/app.html', code);
+    assert.deepEqual(readPairFromUrl(link), { url, token }, `token=${token}`);
+  }
+});
+
+test('readPairFromUrl 讀得到手寫未編碼的 hash 配對碼', () => {
+  const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
+  const got = readPairFromUrl('https://joeyshen1112.github.io/Ch/app.html#pair=' + code);
+  assert.deepEqual(got, { url: 'https://script.google.com/macros/s/x/exec', token: 'secret123' });
+});
+
+test('readPairFromUrl 在 hash 有其他參數時仍取得 pair', () => {
+  const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
+  assert.deepEqual(readPairFromUrl(`https://x/app.html#tab=expenses&pair=${code}&z=1`),
+    { url: 'https://script.google.com/macros/s/x/exec', token: 'secret123' });
+});
+
+test('readPairFromUrl 對無 pair、空值、無效碼與 query string 形式一律回 null', () => {
+  const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
+  assert.equal(readPairFromUrl('https://x/app.html'), null);
+  assert.equal(readPairFromUrl('https://x/app.html#itinerary'), null);
+  assert.equal(readPairFromUrl('https://x/app.html#pair='), null);
+  assert.equal(readPairFromUrl('https://x/app.html#pair=not-base64!!'), null);
+  assert.equal(readPairFromUrl(`https://x/app.html?pair=${code}`), null); // 只收 fragment，不收 query（query 會進伺服器日誌）
+  assert.equal(readPairFromUrl(''), null);
+  assert.equal(readPairFromUrl(null), null);
 });

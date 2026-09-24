@@ -181,3 +181,19 @@ export class SyncEngine {
     });
   }
 }
+
+/* 連結配對：把配對碼放在 fragment（#）而非 query（?）——fragment 不會送到伺服器，
+ * 所以 token 不會出現在 GitHub Pages 的存取日誌裡。刻意不接受 ?pair=。 */
+export function pairLinkUrl(appUrl, code) {
+  return String(appUrl).split('#')[0] + '#pair=' + encodeURIComponent(code);
+}
+
+export function readPairFromUrl(href) {
+  const hash = String(href || '').split('#').slice(1).join('#');
+  const m = /(?:^|&)pair=([^&]*)/.exec(hash);
+  if (!m || m[1] === '') return null;
+  let code = m[1];
+  // 未編碼的手寫連結也要能吃（base64 的 + 若經 URLSearchParams 會被當成空白，故不用它解析）
+  try { code = decodeURIComponent(code); } catch (_) { /* 壞的 % 序列 → 原樣交給 decodePairCode 判定 */ }
+  return decodePairCode(code);
+}

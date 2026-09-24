@@ -61,7 +61,7 @@
 
 <script src="app/vendor/Sortable.min.js"></script>
 <script type="module">
-import { SyncEngine, gasTransport, decodePairCode, LS } from './app/sync.js';
+import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, LS } from './app/sync.js';
 import { renderExpenses } from './app/expenses.js';
 import { renderItinerary } from './app/itinerary.js';
 import { renderPhrases } from './app/phrases.js';
@@ -77,12 +77,31 @@ function showPairView() {
   $('app-view').hidden = true;
   $('pair-view').hidden = false;
 }
+/* 換後端（或首次配對）時，本地快取屬於另一份 Sheet，必須一併清掉避免混資料 */
+function savePair(next) {
+  const cur = getPair();
+  if (!cur || cur.url !== next.url || cur.token !== next.token) {
+    localStorage.removeItem(LS.data);
+    localStorage.removeItem(LS.queue);
+    localStorage.removeItem(LS.lastSync);
+  }
+  localStorage.setItem(LS.pair, JSON.stringify(next));
+}
 $('pair-go').onclick = () => {
   const pair = decodePairCode($('pair-code').value);
   if (!pair) { $('pair-err').hidden = false; return; }
-  localStorage.setItem(LS.pair, JSON.stringify(pair));
+  savePair(pair);
   location.reload();
 };
+/* 連結配對：app.html#pair=<配對碼> → 收下後立刻從網址抹掉，
+ * 避免 token 留在網址列、瀏覽紀錄與截圖裡（fragment 本來就不會送到伺服器） */
+function consumePairLink() {
+  const incoming = readPairFromUrl(location.href);
+  if (!incoming) return;
+  savePair(incoming);
+  try { history.replaceState(null, '', location.pathname + location.search); }
+  catch (_) { location.hash = ''; }
+}
 
 /* ---------- 同步狀態列 ---------- */
 function renderStatus(s) {
@@ -137,6 +156,7 @@ $('unpair').onclick = () => {
 $('refresh').onclick = () => engine.syncNow();
 
 /* ---------- 啟動 ---------- */
+consumePairLink();
 const pair = getPair();
 if (!pair) {
   showPairView();
