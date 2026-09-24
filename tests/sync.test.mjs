@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { encodePairCode, decodePairCode, readPairFromUrl, pairLinkUrl, mergeServerRecords, memStorage, SyncEngine, gasTransport } from '../app/sync.js';
+import { encodePairCode, decodePairCode, readPairFromUrl, pairLinkUrl, isInAppBrowser, mergeServerRecords, memStorage, SyncEngine, gasTransport } from '../app/sync.js';
 
 test('配對碼 roundtrip', () => {
   const code = encodePairCode('https://script.google.com/macros/s/x/exec', 'secret123');
@@ -239,4 +239,32 @@ test('readPairFromUrl 對無 pair、空值、無效碼與 query string 形式一
   assert.equal(readPairFromUrl(`https://x/app.html?pair=${code}`), null); // 只收 fragment，不收 query（query 會進伺服器日誌）
   assert.equal(readPairFromUrl(''), null);
   assert.equal(readPairFromUrl(null), null);
+});
+
+/* ---------- 內建瀏覽器偵測（儲存不會保存，配對留不住） ---------- */
+
+const SAFARI_IOS = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+
+test('isInAppBrowser 認得 LINE／FB／IG／微信 的內建瀏覽器', () => {
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' Line/13.5.0'), true);
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' [FBAN/FBIOS;FBAV/450.0.0]'), true);
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' Instagram 300.0.0.29.110'), true);
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' MicroMessenger/8.0.49'), true);
+});
+
+test('isInAppBrowser 不誤判一般 Safari 與 Chrome', () => {
+  assert.equal(isInAppBrowser(SAFARI_IOS), false);
+  assert.equal(isInAppBrowser(SAFARI_IOS.replace('Safari/604.1', 'CriOS/128.0 Mobile Safari/604.1')), false);
+  assert.equal(isInAppBrowser('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/128.0 Safari/537.36'), false);
+});
+
+test('isInAppBrowser 不把含 line 的一般字詞當成 LINE', () => {
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' Inline/1.0'), false);
+  assert.equal(isInAppBrowser(SAFARI_IOS + ' Streamline 2.0'), false);
+});
+
+test('isInAppBrowser 對空值安全', () => {
+  assert.equal(isInAppBrowser(''), false);
+  assert.equal(isInAppBrowser(null), false);
+  assert.equal(isInAppBrowser(undefined), false);
 });

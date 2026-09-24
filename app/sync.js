@@ -197,3 +197,11 @@ export function readPairFromUrl(href) {
   try { code = decodeURIComponent(code); } catch (_) { /* 壞的 % 序列 → 原樣交給 decodePairCode 判定 */ }
   return decodePairCode(code);
 }
+
+/* LINE／FB／IG／微信 等 App 的內建瀏覽器是各自獨立的 WKWebView：儲存空間與 Safari 不通、
+ * 且會被清掉，在裡面配對留不住。偵測到就提示改用 Safari 開啟。 */
+const IN_APP_UA = /\bLine\/|\bFBAN\/|\bFBAV\/|\bInstagram[\s/]|\bMicroMessenger\/|\bTwitter for/i;
+
+export function isInAppBrowser(ua) {
+  return IN_APP_UA.test(String(ua || ''));
+}

@@ -85,6 +85,24 @@ function timePickerHTML(prefix, value) {
   };
   return `<select id="${prefix}-hh" class="tsel">${opts(HOURS, h || '', '時')}</select><span class="tcolon">:</span><select id="${prefix}-mm" class="tsel">${opts(MINS, m || '', '分')}</select>`;
 }
+/* 備註欄隨內容長高：先歸零再依 scrollHeight 設定，否則刪字時不會縮回去 */
+function autoGrow(ta) {
+  if (!ta) return;
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+function bindAutoGrow(scope) {
+  const tas = scope.querySelectorAll('textarea.grow');
+  tas.forEach(ta => {
+    autoGrow(ta);
+    ta.addEventListener('input', () => autoGrow(ta));
+  });
+  // 字體是非同步載入的，換字體後行數可能改變——載完再量一次
+  if (tas.length && typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => tas.forEach(autoGrow)).catch(() => {});
+  }
+}
+
 function readTime(scope, prefix) {
   const hh = scope.querySelector('#' + prefix + '-hh').value;
   const mm = scope.querySelector('#' + prefix + '-mm').value;
@@ -162,11 +180,12 @@ export function renderItinerary(el, engine) {
           <div class="tpick" style="flex:1">${timePickerHTML('ie', r.time || '')}</div>
         </div>
         <input class="ie-title" value="${esc(r.title)}" placeholder="標題" style="margin-top:8px">
-        <textarea class="ie-note" rows="2" placeholder="備註（可換行）" style="margin-top:8px">\n${esc(r.note || '')}</textarea>
+        <textarea class="ie-note grow" rows="2" placeholder="備註（可換行）" style="margin-top:8px">\n${esc(r.note || '')}</textarea>
         <input class="ie-map" value="${esc(r.mapUrl || '')}" inputmode="url" placeholder="🗺️ 地圖連結（選填）" style="margin-top:8px">
-        <div style="display:flex;gap:8px;margin-top:10px">
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
           <button class="btn ie-save" type="button">儲存</button>
-          <button class="btn warn ie-del" type="button">刪除</button>
+          <button class="btn ghost ie-cancel" type="button">取消</button>
+          <button class="btn warn ie-del" type="button" style="margin-left:auto">刪除</button>
         </div>
       </div>` : ''}
     </div>`;
@@ -184,7 +203,7 @@ export function renderItinerary(el, engine) {
         </div>
       </div>
       <div id="it-linked" class="muted" hidden style="margin-top:6px"></div>
-      <textarea id="it-note" rows="2" placeholder="備註（選填，可換行）" style="margin-top:8px"></textarea>
+      <textarea id="it-note" class="grow" rows="2" placeholder="備註（選填，可換行）" style="margin-top:8px"></textarea>
       <input id="it-map" inputmode="url" placeholder="🗺️ 地圖連結（選填，可貼 Google／Kakao 網址）" style="margin-top:8px">
       <button class="btn" type="submit" style="margin-top:10px;width:100%">＋ 加入 <span id="it-daylabel"></span> 的行程</button>
     </form>`;
@@ -202,6 +221,7 @@ export function renderItinerary(el, engine) {
     if (saved.focusId) { const f = el.querySelector('#' + saved.focusId); if (f) f.focus(); }
   }
 
+  bindAutoGrow(el);
   bindItinerary(el, engine, items);
   initDrag(el, engine); // Task 4 實作；本 task 先放空函式
 }
@@ -244,6 +264,10 @@ function bindItinerary(el, engine, items) {
         if (day !== r.day) sortOrder = insertOrderForTime(sortedDayItems(engine.data.itinerary, day), time); // 換天 → 依時間插入目標日
         expandedId = null;
         engine.upsert('itinerary', { ...r, day, time, title, note, mapUrl, sortOrder, updatedAt: Date.now() });
+      };
+      card.querySelector('.ie-cancel').onclick = () => {
+        expandedId = null;
+        renderItinerary(el, engine); // 重繪＝從記錄重建，未儲存的編輯自然丟棄
       };
       card.querySelector('.ie-del').onclick = () => {
         if (confirm(`刪除「${r.title}」？`)) {

@@ -28,8 +28,8 @@ main{padding:14px 14px calc(74px + env(safe-area-inset-bottom,0px));max-width:64
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
 .field{display:block;font-size:.78rem;color:var(--ink-soft);margin:8px 0 2px}
 input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:1rem;font-family:inherit}
-textarea{resize:vertical;line-height:1.5;min-height:62px;display:block}
-.btn{display:inline-block;padding:11px 18px;border:0;border-radius:10px;background:var(--pine);color:var(--hanji);font-weight:700;font-size:.95rem;cursor:pointer}
+textarea{resize:none;line-height:1.5;display:block;overflow:hidden}
+.btn{display:inline-block;padding:11px 18px;border:1.5px solid transparent;border-radius:10px;background:var(--pine);color:var(--hanji);font-weight:700;font-size:.95rem;cursor:pointer}
 .btn.warn{background:var(--vermilion)}
 .btn.ghost{background:none;border:1.5px solid var(--pine);color:var(--pine)}
 .muted{color:var(--ink-soft);font-size:.82rem}

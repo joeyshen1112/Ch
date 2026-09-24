@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=5">
+<link rel="stylesheet" href="app/app.css?v=6">
 </head>
 <body>
 
@@ -22,6 +22,10 @@
     <div class="card" style="margin-top:40px">
       <h2 style="margin:0 0 6px">🔗 配對</h2>
       <p class="muted">貼上 Joey 給你的配對碼，之後不會再問。</p>
+      <p id="inapp-warn" hidden style="background:#fbeceb;border:1px solid var(--vermilion);color:var(--vermilion);border-radius:9px;padding:10px 12px;font-size:.84rem;line-height:1.55;margin:10px 0 0">
+        ⚠️ 你正在 LINE／FB 等 App 的<b>內建瀏覽器</b>裡開啟，這裡的設定<b>不會被保存</b>，下次還是會問你配對碼。<br>
+        請點右下角的「⋯」或分享圖示 →「<b>用 Safari 開啟</b>」，再貼一次就好。
+      </p>
       <label class="field" for="pair-code">配對碼</label>
       <input id="pair-code" autocomplete="off" placeholder="eyJ1cmwiOi...">
       <p id="pair-err" class="muted" style="color:var(--vermilion)" hidden>配對碼格式不對，再確認一次。</p>
@@ -61,7 +65,7 @@
 
 <script src="app/vendor/Sortable.min.js"></script>
 <script type="module">
-import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, LS } from './app/sync.js';
+import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, isInAppBrowser, LS } from './app/sync.js';
 import { renderExpenses } from './app/expenses.js';
 import { renderItinerary } from './app/itinerary.js';
 import { renderPhrases } from './app/phrases.js';
@@ -76,6 +80,7 @@ function getPair() {
 function showPairView() {
   $('app-view').hidden = true;
   $('pair-view').hidden = false;
+  if (isInAppBrowser(navigator.userAgent)) $('inapp-warn').hidden = false;
 }
 /* 換後端（或首次配對）時，本地快取屬於另一份 Sheet，必須一併清掉避免混資料 */
 function savePair(next) {
@@ -179,6 +184,16 @@ if (!pair) {
 
 // Service worker（僅 https 或 localhost；GAS 請求不經 SW）
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  // 新 SW 接管時自動重載一次（sw.js 有 skipWaiting + clients.claim），
+  // 讓更新在第一次啟動就套用，不必開兩次。controller 為 null 代表是初次安裝，不重載。
+  if (navigator.serviceWorker.controller) {
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloading) return;
+      reloading = true;
+      location.reload();
+    });
+  }
   navigator.serviceWorker.register('./sw.js');
 }
 </script>
