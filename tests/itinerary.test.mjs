@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl } from '../app/itinerary.js';
+import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor } from '../app/itinerary.js';
 
 test('dayRange 起訖含端點', () => {
   const days = dayRange('2026-10-22', '2026-10-29');
@@ -58,4 +58,40 @@ test('kakaoMapUrl 編碼', () => {
 test('dayRange 拒絕月曆不存在日期、超長區間截斷 60 天', () => {
   assert.deepEqual(dayRange('2026-02-30', '2026-03-05'), []);
   assert.equal(dayRange('2026-01-01', '2026-12-31').length, 60);
+});
+
+/* ---------- 地圖連結三層 fallback ---------- */
+
+const SPOT = { n: '佛國寺', lat: 35.78988, lng: 129.33189 };
+
+test('mapLinkFor 第一層：有 mapUrl 就用它，勝過景點座標', () => {
+  const link = mapLinkFor({ title: '佛國寺', mapUrl: 'https://maps.app.goo.gl/abc123' }, SPOT);
+  assert.equal(link, 'https://maps.app.goo.gl/abc123');
+});
+
+test('mapLinkFor 第二層：沒有 mapUrl 時用景點座標', () => {
+  assert.equal(mapLinkFor({ title: '佛國寺' }, SPOT), kakaoMapUrl('佛國寺', 35.78988, 129.33189));
+});
+
+test('mapLinkFor 第三層：沒有 mapUrl 也沒有景點時用標題搜尋', () => {
+  assert.equal(mapLinkFor({ title: '豬肉湯飯 本店' }, null),
+    'https://map.kakao.com/link/search/%E8%B1%AC%E8%82%89%E6%B9%AF%E9%A3%AF%20%E6%9C%AC%E5%BA%97');
+});
+
+test('mapLinkFor 擋掉非 http(s) 的 mapUrl 並退回下一層', () => {
+  assert.equal(mapLinkFor({ title: '佛國寺', mapUrl: 'javascript:alert(1)' }, SPOT),
+    kakaoMapUrl('佛國寺', 35.78988, 129.33189));
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '  JavaScript:alert(1)  ' }, null),
+    'https://map.kakao.com/link/search/X');
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: 'data:text/html,<script>' }, null),
+    'https://map.kakao.com/link/search/X');
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '不是網址' }, null),
+    'https://map.kakao.com/link/search/X');
+});
+
+test('mapLinkFor 三層都沒有時回空字串（不渲染 📍）', () => {
+  assert.equal(mapLinkFor({ title: '' }, null), '');
+  assert.equal(mapLinkFor({ title: '   ' }, null), '');
+  assert.equal(mapLinkFor({}, null), '');
+  assert.equal(mapLinkFor(null, null), '');
 });

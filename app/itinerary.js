@@ -55,6 +55,21 @@ export function kakaoMapUrl(name, lat, lng) {
   return `https://map.kakao.com/link/map/${encodeURIComponent(name)},${lat},${lng}`;
 }
 
+/* 地圖連結三層 fallback：手貼網址 → 景點座標 → 標題搜尋。
+ * mapUrl 只收 http/https——Sheet 可被手改，javascript: 會變成 XSS。 */
+export function mapLinkFor(record, spot) {
+  const raw = String((record && record.mapUrl) || '').trim();
+  if (raw) {
+    try {
+      const u = new URL(raw);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return raw;
+    } catch (_) { /* 不是合法網址 → 往下退 */ }
+  }
+  if (spot) return kakaoMapUrl(spot.n, spot.lat, spot.lng);
+  const title = String((record && record.title) || '').trim();
+  return title ? `https://map.kakao.com/link/search/${encodeURIComponent(title)}` : '';
+}
+
 /* ---------- UI ---------- */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const WEEK = ['日','一','二','三','四','五','六'];
@@ -110,6 +125,7 @@ export function renderItinerary(el, engine) {
       time: readTime(el, 'itt'),
       title: el.querySelector('#it-title').value,
       note: el.querySelector('#it-note').value,
+      mapUrl: el.querySelector('#it-map').value,
       spotId: el.querySelector('#it-form').dataset.spotId || '',
       focusId: active && el.contains(active) ? active.id : null,
     };
@@ -124,6 +140,7 @@ export function renderItinerary(el, engine) {
   const cards = items.map(r => {
     const spot = r.spotId ? SPOTS.find(s => s.id === r.spotId) : null;
     const emoji = spot ? (CAT_EMOJI[spot.cat] || '📍') : '📝';
+    const mapLink = mapLinkFor(r, spot);
     const open = expandedId === r.id;
     return `
     <div class="itcard${Number(r.done) === 1 ? ' done' : ''}${open ? ' open' : ''}" data-id="${esc(r.id)}" style="--dc:${spot ? spot.c : 'var(--line)'}">
@@ -135,7 +152,7 @@ export function renderItinerary(el, engine) {
           <div class="ittitle">${esc(r.title)}</div>
           ${r.note ? `<div class="itnote">${esc(r.note)}</div>` : ''}
         </div>
-        ${spot ? `<a class="itmap" href="${kakaoMapUrl(spot.n, spot.lat, spot.lng)}" target="_blank" rel="noopener" title="Kakao Map">📍</a>` : ''}
+        ${mapLink ? `<a class="itmap" href="${esc(mapLink)}" target="_blank" rel="noopener" title="開地圖">📍</a>` : ''}
         <span class="ithandle" title="長按拖移">≡</span>
       </div>
       ${open ? `
@@ -145,7 +162,8 @@ export function renderItinerary(el, engine) {
           <div class="tpick" style="flex:1">${timePickerHTML('ie', r.time || '')}</div>
         </div>
         <input class="ie-title" value="${esc(r.title)}" placeholder="標題" style="margin-top:8px">
-        <input class="ie-note" value="${esc(r.note || '')}" placeholder="備註" style="margin-top:8px">
+        <textarea class="ie-note" rows="2" placeholder="備註（可換行）" style="margin-top:8px">\n${esc(r.note || '')}</textarea>
+        <input class="ie-map" value="${esc(r.mapUrl || '')}" inputmode="url" placeholder="🗺️ 地圖連結（選填）" style="margin-top:8px">
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn ie-save" type="button">儲存</button>
           <button class="btn warn ie-del" type="button">刪除</button>
@@ -166,7 +184,8 @@ export function renderItinerary(el, engine) {
         </div>
       </div>
       <div id="it-linked" class="muted" hidden style="margin-top:6px"></div>
-      <input id="it-note" placeholder="備註（選填）" style="margin-top:8px">
+      <textarea id="it-note" rows="2" placeholder="備註（選填，可換行）" style="margin-top:8px"></textarea>
+      <input id="it-map" inputmode="url" placeholder="🗺️ 地圖連結（選填，可貼 Google／Kakao 網址）" style="margin-top:8px">
       <button class="btn" type="submit" style="margin-top:10px;width:100%">＋ 加入 <span id="it-daylabel"></span> 的行程</button>
     </form>`;
 
@@ -177,6 +196,7 @@ export function renderItinerary(el, engine) {
     if (sh) { el.querySelector('#itt-hh').value = sh; el.querySelector('#itt-mm').value = sm || '00'; }
     el.querySelector('#it-title').value = saved.title;
     el.querySelector('#it-note').value = saved.note;
+    el.querySelector('#it-map').value = saved.mapUrl;
     el.querySelector('#it-form').dataset.spotId = saved.spotId;
     if (saved.spotId) showLinked(el, SPOTS.find(s => s.id === saved.spotId));
     if (saved.focusId) { const f = el.querySelector('#' + saved.focusId); if (f) f.focus(); }
@@ -219,10 +239,11 @@ function bindItinerary(el, engine, items) {
         const time = readTime(card, 'ie');
         const title = card.querySelector('.ie-title').value.trim() || r.title;
         const note = card.querySelector('.ie-note').value.trim();
+        const mapUrl = card.querySelector('.ie-map').value.trim();
         let sortOrder = r.sortOrder;
         if (day !== r.day) sortOrder = insertOrderForTime(sortedDayItems(engine.data.itinerary, day), time); // 換天 → 依時間插入目標日
         expandedId = null;
-        engine.upsert('itinerary', { ...r, day, time, title, note, sortOrder, updatedAt: Date.now() });
+        engine.upsert('itinerary', { ...r, day, time, title, note, mapUrl, sortOrder, updatedAt: Date.now() });
       };
       card.querySelector('.ie-del').onclick = () => {
         if (confirm(`刪除「${r.title}」？`)) {
@@ -262,13 +283,14 @@ function bindItinerary(el, engine, items) {
     if (!title) return;
     const time = readTime(el, 'itt');
     const note = el.querySelector('#it-note').value.trim();
+    const mapUrl = el.querySelector('#it-map').value.trim();
     const spotId = form.dataset.spotId || '';
     // 先清欄位再 upsert：onChange 會同步重繪，否則 capture/restore 會把剛送出的值復活
-    titleInput.value = ''; el.querySelector('#it-note').value = '';
+    titleInput.value = ''; el.querySelector('#it-note').value = ''; el.querySelector('#it-map').value = '';
     el.querySelector('#itt-hh').value = ''; el.querySelector('#itt-mm').value = '';
     form.dataset.spotId = ''; showLinked(el, null); sug.hidden = true;
     engine.upsert('itinerary', {
-      id: crypto.randomUUID(), day: currentDay, time, title, spotId, note,
+      id: crypto.randomUUID(), day: currentDay, time, title, spotId, note, mapUrl,
       sortOrder: insertOrderForTime(sortedDayItems(engine.data.itinerary, currentDay), time),
       done: 0, updatedAt: Date.now(), deleted: 0,
     });
