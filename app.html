@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=9">
+<link rel="stylesheet" href="app/app.css?v=10">
 </head>
 <body>
 
@@ -66,6 +66,7 @@
 <script src="app/vendor/Sortable.min.js"></script>
 <script type="module">
 import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, isInAppBrowser, LS } from './app/sync.js';
+import { withMinDuration } from './app/ui.js';
 import { renderExpenses } from './app/expenses.js';
 import { renderItinerary } from './app/itinerary.js';
 import { renderPhrases } from './app/phrases.js';
@@ -158,7 +159,14 @@ $('rate-save').onclick = () => {
 $('unpair').onclick = () => {
   if (confirm('確定要重設配對碼？')) { localStorage.removeItem(LS.pair); localStorage.removeItem(LS.lastSync); location.reload(); }
 };
-$('refresh').onclick = () => engine.syncNow();
+$('refresh').onclick = async () => {
+  const btn = $('refresh');
+  if (btn.classList.contains('spin')) return; // 連點時不重複啟動
+  btn.classList.add('spin');
+  // 同步常常只花 100–300ms，不墊最短時間的話動畫會一閃而過，看起來像沒反應
+  try { await withMinDuration(() => engine.syncNow(), 600); }
+  finally { btn.classList.remove('spin'); }
+};
 
 /* ---------- 啟動 ---------- */
 consumePairLink();

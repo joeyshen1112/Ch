@@ -174,7 +174,6 @@ export function renderExpenses(el, engine) {
     <div class="card" style="display:flex;gap:14px;align-items:center">
       <div class="pie" style="${pieCSS(totals.byCat, totals.totalTWD)}"></div>
       <div style="flex:1;min-width:0">
-        <div class="muted">今日 <b style="color:var(--ink)">NT$ ${totals.todayTWD.toLocaleString()}</b></div>
         <div class="muted">總計 <b style="color:var(--ink);font-size:1.1rem">NT$ ${totals.totalTWD.toLocaleString()}</b></div>
         ${payerLine}
         <div class="muted" style="font-size:.72rem">匯率 1 KRW = ${rate} TWD（⚙ 可改）</div>

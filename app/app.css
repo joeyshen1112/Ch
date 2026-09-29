@@ -15,6 +15,9 @@ button{font-family:inherit}
 .sync{font-size:.72rem;padding:4px 10px;border-radius:14px;background:rgba(244,236,221,.14);white-space:nowrap}
 .sync.off{background:var(--vermilion)}
 .iconbtn{background:none;border:0;color:var(--hanji);font-size:1.1rem;padding:6px;cursor:pointer}
+.iconbtn.spin{animation:iconspin .7s linear infinite}
+@keyframes iconspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.iconbtn.spin{animation:none;opacity:.45}}
 
 /* 內容與底部 tab */
 main{padding:14px 14px calc(74px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto}

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, kakaoMapUrl, mapLinkFor, chipScrollTarget, splitTitleEmoji } from '../app/itinerary.js';
+import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, naverSearchUrl, mapQuery, mapLinkFor, chipScrollTarget, splitTitleEmoji } from '../app/itinerary.js';
 
 test('dayRange 起訖含端點', () => {
   const days = dayRange('2026-10-22', '2026-10-29');
@@ -50,9 +50,27 @@ test('needsRenorm 與 renormalize', () => {
   assert.equal(out[0].id, 'x'); // 保持原順序、整筆複本
 });
 
-test('kakaoMapUrl 編碼', () => {
-  assert.equal(kakaoMapUrl('佛國寺', 35.78988, 129.33189),
-    'https://map.kakao.com/link/map/%E4%BD%9B%E5%9C%8B%E5%AF%BA,35.78988,129.33189');
+test('naverSearchUrl 編碼，空字串回空', () => {
+  assert.equal(naverSearchUrl('해동용궁사'),
+    'https://map.naver.com/p/search/%ED%95%B4%EB%8F%99%EC%9A%A9%EA%B6%81%EC%82%AC');
+  assert.equal(naverSearchUrl(''), '');
+  assert.equal(naverSearchUrl('   '), '');
+  assert.equal(naverSearchUrl(null), '');
+});
+
+test('mapQuery 去掉開頭 emoji、餐別前綴與括號內容', () => {
+  assert.equal(mapQuery('🍤 晚餐 首選 炸豬排 Tonsyou 南浦'), '炸豬排 Tonsyou 南浦');
+  assert.equal(mapQuery('🍣 Minyeong 活魚工廠 釜田市場店（生魚片壽司）'), 'Minyeong 活魚工廠 釜田市場店');
+  assert.equal(mapQuery('🥘 午餐備案 西班牙俱樂部 海雲台站'), '西班牙俱樂部 海雲台站');
+  assert.equal(mapQuery('🥞 早午餐 Your 類型 田浦直營店'), 'Your 類型 田浦直營店');
+  assert.equal(mapQuery('🍗 宵夜 Out 雞 西面店'), 'Out 雞 西面店');
+});
+
+test('mapQuery 對沒有前綴或括號的標題不動它', () => {
+  assert.equal(mapQuery('🛍 樂天 Outlet 東釜山'), '樂天 Outlet 東釜山');
+  assert.equal(mapQuery('海東龍宮寺'), '海東龍宮寺');
+  assert.equal(mapQuery(''), '');
+  assert.equal(mapQuery(null), '');
 });
 
 test('dayRange 拒絕月曆不存在日期、超長區間截斷 60 天', () => {
@@ -62,31 +80,31 @@ test('dayRange 拒絕月曆不存在日期、超長區間截斷 60 天', () => {
 
 /* ---------- 地圖連結三層 fallback ---------- */
 
-const SPOT = { n: '佛國寺', lat: 35.78988, lng: 129.33189 };
+const SPOT = { n: '佛國寺', ko: '불국사', lat: 35.78988, lng: 129.33189 };
 
 test('mapLinkFor 第一層：有 mapUrl 就用它，勝過景點座標', () => {
   const link = mapLinkFor({ title: '佛國寺', mapUrl: 'https://maps.app.goo.gl/abc123' }, SPOT);
   assert.equal(link, 'https://maps.app.goo.gl/abc123');
 });
 
-test('mapLinkFor 第二層：沒有 mapUrl 時用景點座標', () => {
-  assert.equal(mapLinkFor({ title: '佛國寺' }, SPOT), kakaoMapUrl('佛國寺', 35.78988, 129.33189));
+test('mapLinkFor 第二層：沒有 mapUrl 時用景點的韓文名搜 Naver', () => {
+  assert.equal(mapLinkFor({ title: '佛國寺' }, SPOT), naverSearchUrl('불국사'));
 });
 
-test('mapLinkFor 第三層：沒有 mapUrl 也沒有景點時用標題搜尋', () => {
-  assert.equal(mapLinkFor({ title: '豬肉湯飯 本店' }, null),
-    'https://map.kakao.com/link/search/%E8%B1%AC%E8%82%89%E6%B9%AF%E9%A3%AF%20%E6%9C%AC%E5%BA%97');
+test('mapLinkFor 第二層：景點沒有韓文名時退回中文名', () => {
+  assert.equal(mapLinkFor({ title: 'X' }, { n: '佛國寺', ko: '' }), naverSearchUrl('佛國寺'));
+});
+
+test('mapLinkFor 第三層：沒有 mapUrl 也沒有景點時用清理過的標題搜 Naver', () => {
+  assert.equal(mapLinkFor({ title: '🍜 晚餐 豬肉湯飯 本店（24 小時）' }, null),
+    naverSearchUrl('豬肉湯飯 本店'));
 });
 
 test('mapLinkFor 擋掉非 http(s) 的 mapUrl 並退回下一層', () => {
-  assert.equal(mapLinkFor({ title: '佛國寺', mapUrl: 'javascript:alert(1)' }, SPOT),
-    kakaoMapUrl('佛國寺', 35.78988, 129.33189));
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: '  JavaScript:alert(1)  ' }, null),
-    'https://map.kakao.com/link/search/X');
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: 'data:text/html,<script>' }, null),
-    'https://map.kakao.com/link/search/X');
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: '不是網址' }, null),
-    'https://map.kakao.com/link/search/X');
+  assert.equal(mapLinkFor({ title: '佛國寺', mapUrl: 'javascript:alert(1)' }, SPOT), naverSearchUrl('불국사'));
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '  JavaScript:alert(1)  ' }, null), naverSearchUrl('X'));
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: 'data:text/html,<script>' }, null), naverSearchUrl('X'));
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '不是網址' }, null), naverSearchUrl('X'));
 });
 
 test('mapLinkFor 三層都沒有時回空字串（不渲染 📍）', () => {

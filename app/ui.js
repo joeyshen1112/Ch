@@ -19,3 +19,10 @@ export function skeletonHTML(phase, rows = 4) {
       ${bar(['90%', '75%', '85%', '68%'][i % 4])}
     </div>`).join('') + '</div>';
 }
+
+/* 讓短暫的工作也看得見：同步常常只花 100–300ms，動畫會一閃而過。
+ * sleep 可注入以便測試。work 的錯誤照常往外拋。 */
+export async function withMinDuration(work, ms, sleep = m => new Promise(r => setTimeout(r, m))) {
+  const [result] = await Promise.all([work(), sleep(ms)]);
+  return result;
+}
