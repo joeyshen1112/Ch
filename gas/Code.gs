@@ -19,11 +19,23 @@ function normalize_(field, value) {
 }
 
 /* 首次執行一次：建立四個分頁與表頭，並把全表設為純文字格式
- * （避免 Sheets 把 2026-10-24 自動轉成 Date、pull 回來變 ISO 字串） */
+ * （避免 Sheets 把 2026-10-24 自動轉成 Date、pull 回來變 ISO 字串）
+ * 可重複執行；日後在 SHEET_TABS 加欄位後再跑一次即可補上表頭。 */
 function setup() {
   Object.keys(SHEET_TABS).forEach(function (name) {
     const sh = sheet_(name);
     sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).setNumberFormat('@');
+  });
+  syncHeaders();
+}
+
+/* 表頭只在 sheet_() 建立分頁那一刻寫一次，之後往 SHEET_TABS 加欄位不會補標籤。
+ * 在編輯器手動跑這支就會補齊；純標示用途，不影響讀寫（readRows_ 是照 SHEET_TABS 對欄位）。
+ * 不需要重新部署——部署只影響 doGet / doPost。 */
+function syncHeaders() {
+  Object.keys(SHEET_TABS).forEach(function (name) {
+    const header = SHEET_TABS[name];
+    sheet_(name).getRange(1, 1, 1, header.length).setValues([header]);
   });
 }
 
