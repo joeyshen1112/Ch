@@ -60,6 +60,10 @@ export function gasTransport(pair, fetchFn = fetch) {
 
 const keyFieldOf = tab => (tab === 'settings' ? 'key' : 'id');
 
+/* 伺服器偶發回 unauthorized（token 其實有效，重試就成功）。一次就清掉配對太粗暴，
+ * 改成連續 N 次才認定失效；任何一次成功的請求都會歸零。 */
+export const AUTH_FAIL_LIMIT = 3;
+
 export class SyncEngine {
   constructor({ transport, storage, onChange = () => {}, onStatus = () => {}, pollMs = 20000 }) {
     this.transport = transport;
@@ -75,6 +79,7 @@ export class SyncEngine {
     this.flushing = false;
     this.retryPending = false;
     this.online = true;
+    this.authFails = 0;
     this.timer = null;
     this.retryTimer = null;
     this.load_();
@@ -97,6 +102,11 @@ export class SyncEngine {
   }
   pendingCount() { return this.inFlight.length + this.queue.length; }
   opKey_(op) { return op.tab + ' ' + op.record[keyFieldOf(op.tab)]; }
+  authOk_() { this.authFails = 0; }
+  authFail_() {
+    this.authFails += 1;
+    if (this.authFails >= AUTH_FAIL_LIMIT) this.status_({ unauthorized: true });
+  }
   status_(extra) {
     this.onStatus(Object.assign({ online: this.online, pending: this.pendingCount(), flushing: this.flushing }, extra));
   }
@@ -127,6 +137,7 @@ export class SyncEngine {
           this.inFlight = [];
           this.attempt = 0;
           this.online = true;
+          this.authOk_();
           this.save_();
         } catch (err) {
           // 送出期間若同 (tab,key) 已有更新版本進佇列，丟棄過時的 inFlight op
@@ -139,7 +150,7 @@ export class SyncEngine {
           clearTimeout(this.retryTimer);
           this.retryPending = true;
           this.retryTimer = setTimeout(() => { this.retryPending = false; this.flush(); }, delay);
-          if (String(err.message) === 'unauthorized') this.status_({ unauthorized: true });
+          if (String(err.message) === 'unauthorized') this.authFail_();
           break;
         }
       }
@@ -154,6 +165,7 @@ export class SyncEngine {
       // 往回多拉 60 秒：伺服器批次寫入非原子，避免 pull 撞上寫入中的批次而永久漏掉記錄（LWW 合併具冪等性）
       const resp = await this.transport.pull(Math.max(0, this.lastSync - 60000));
       this.online = true;
+      this.authOk_();
       const before = JSON.stringify(this.data); // 資料量小，直接序列化比對；重疊視窗會重複回傳相同內容
       for (const tab of ['itinerary', 'expenses']) {
         this.data[tab] = mergeServerRecords(this.data[tab], resp[tab], this.pendingKeys_(tab), 'id');
@@ -166,7 +178,7 @@ export class SyncEngine {
       if (JSON.stringify(this.data) !== before) this.onChange();
     } catch (err) {
       this.online = false;
-      if (String(err.message) === 'unauthorized') { this.status_({ unauthorized: true }); return; }
+      if (String(err.message) === 'unauthorized') this.authFail_(); // 不 return，下面仍要更新狀態列
     }
     this.status_();
   }

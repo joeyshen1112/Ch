@@ -41,7 +41,8 @@ function syncHeaders() {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (!checkToken_(p.token)) return json_({ error: 'unauthorized' });
+  const auth = authOf_(p.token, 'GET ' + (p.action || '-'));
+  if (auth !== 'ok') return json_({ error: auth });
   if (p.action === 'pull') {
     const lock = LockService.getScriptLock(); // 與 doPost 互斥：避免讀到寫入一半的批次
     lock.waitLock(20000);
@@ -53,8 +54,14 @@ function doGet(e) {
 
 function doPost(e) {
   let body;
-  try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ error: 'bad json' }); }
-  if (!checkToken_(body.token)) return json_({ error: 'unauthorized' });
+  try { body = JSON.parse(e.postData.contents); }
+  catch (err) {
+    // postData 若整個不見，代表 body 在傳輸途中掉了——這一行會告訴我們是不是這種情況
+    console.error('POST bad json：postData ' + (e && e.postData ? '存在但解析失敗' : '整個缺席'));
+    return json_({ error: 'bad json' });
+  }
+  const auth = authOf_(body.token, 'POST');
+  if (auth !== 'ok') return json_({ error: auth });
   const ops = (body.ops || []).slice(0, 50);
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -132,9 +139,21 @@ function onEdit(e) {
   sh.getRange(startRow, col, numRows, 1).setValues(vals);
 }
 
-function checkToken_(token) {
+/* 「讀不到 TOKEN 設定」和「token 不符」是兩回事：前者是暫時性故障，前端不該因此清掉配對。
+ * 兩條分支都寫進執行記錄（只記長度不記內容），偶發失敗時才有證據可查。
+ * 回傳 'ok' / 'server'（暫時性）/ 'unauthorized'（真的沒授權）。 */
+function authOf_(token, where) {
   const expected = PropertiesService.getScriptProperties().getProperty('TOKEN');
-  return Boolean(expected) && token === expected;
+  if (!expected) {
+    console.error('AUTH[' + where + '] server：讀不到 TOKEN 指令碼屬性');
+    return 'server';
+  }
+  if (token !== expected) {
+    console.error('AUTH[' + where + '] unauthorized：收到 len=' +
+      (token == null ? 'null' : String(token).length) + '，期望 len=' + expected.length);
+    return 'unauthorized';
+  }
+  return 'ok';
 }
 
 function json_(obj) {

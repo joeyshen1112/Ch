@@ -108,13 +108,67 @@ test('pull 合併伺服器資料、pending 記錄不被覆蓋、lastSync 前進'
   assert.equal(e.lastSync, 2000);
 });
 
-test('unauthorized 透過 onStatus 通報', async () => {
+const authEngine = () => {
   const statuses = [];
   const t = fakeTransport();
-  t.pull = async () => { throw new Error('unauthorized'); };
   const e = new SyncEngine({ transport: t, storage: memStorage(), onStatus: s => statuses.push(s), pollMs: 999999 });
+  return { t, e, statuses, notified: () => statuses.some(s => s.unauthorized === true) };
+};
+
+test('unauthorized 單次不通報——偶發抖動不該毀掉配對', async () => {
+  const { t, e, notified } = authEngine();
+  t.pull = async () => { throw new Error('unauthorized'); };
   await e.pull();
-  assert.equal(statuses.some(s => s.unauthorized === true), true);
+  assert.equal(notified(), false);
+  await e.pull();
+  assert.equal(notified(), false, '第 2 次仍不該通報');
+});
+
+test('unauthorized 未達門檻時仍要把狀態列標成離線', async () => {
+  const { t, e, statuses, notified } = authEngine();
+  t.pull = async () => { throw new Error('unauthorized'); };
+  await e.pull();
+  assert.equal(notified(), false);
+  assert.equal(statuses[statuses.length - 1].online, false, '使用者要看得出同步失敗了');
+});
+
+test('unauthorized 連續 3 次才通報', async () => {
+  const { t, e, notified } = authEngine();
+  t.pull = async () => { throw new Error('unauthorized'); };
+  await e.pull(); await e.pull(); await e.pull();
+  assert.equal(notified(), true);
+});
+
+test('中間成功一次就把 unauthorized 計數歸零', async () => {
+  const { t, e, notified } = authEngine();
+  const boom = async () => { throw new Error('unauthorized'); };
+  t.pull = boom; await e.pull(); await e.pull();
+  t.pull = async since => { t.calls.pull.push(since); return t.pullResponse; };
+  await e.pull();                       // 成功 → 歸零
+  t.pull = boom; await e.pull(); await e.pull();
+  assert.equal(notified(), false, '成功後只累積 2 次，不該通報');
+  await e.pull();
+  assert.equal(notified(), true, '再一次才滿 3 次');
+});
+
+test('server 錯誤只標記離線，永遠不觸發 unauthorized', async () => {
+  const { t, e, statuses, notified } = authEngine();
+  t.pull = async () => { throw new Error('server'); };
+  await e.pull(); await e.pull(); await e.pull(); await e.pull();
+  assert.equal(notified(), false);
+  assert.equal(statuses[statuses.length - 1].online, false);
+});
+
+test('push 的 unauthorized 也走同一套計數', async () => {
+  const { t, e, notified } = authEngine();
+  t.push = async () => { throw new Error('unauthorized'); };
+  for (let i = 0; i < 3; i++) {
+    e.queue.push({ tab: 'expenses', record: { id: 'x' + i } }); // 不用 upsert，避免它自己再觸發 flush
+    await e.flush(true);
+    clearTimeout(e.retryTimer);  // 退避計時器會無限重試，測試裡要拆掉
+    e.retryPending = false;
+    assert.equal(notified(), i >= 2, '第 ' + (i + 1) + ' 次');
+  }
 });
 
 test('資料與佇列持久化到 storage 並可重建', async () => {

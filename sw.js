@@ -1,6 +1,6 @@
 /* sw.js — app shell cache-first；GAS／跨域請求一律不攔截（離線寫入由 app/sync.js 佇列處理）
  * 改動 SHELL 內任何檔案時，必須 bump CACHE 版本（tt-vN）。 */
-const CACHE = 'tt-v12'; // v12: 刷新動畫、地圖改 Naver、統計去掉今日
+const CACHE = 'tt-v13'; // v13: unauthorized 連續 3 次才認定失效
 const SHELL = [
   './app.html',
   './manifest.json',
