@@ -4,7 +4,7 @@
  */
 const SHEET_TABS = {
   itinerary: ['id','day','time','title','spotId','note','sortOrder','done','updatedAt','deleted','mapUrl'],
-  expenses:  ['id','date','title','category','amount','currency','updatedAt','deleted'],
+  expenses:  ['id','date','title','category','amount','currency','updatedAt','deleted','payer','payMethod'],
   phrases:   ['category','zh','ko','roman'],
   settings:  ['key','value'],
 };

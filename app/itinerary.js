@@ -1,5 +1,6 @@
 /* app/itinerary.js — 行程 tab：日期 chips、卡片時間軸、景點庫搜尋、拖移排序 */
 import { SPOTS } from './spots-data.js';
+import { loadPhase, skeletonHTML } from './ui.js';
 
 const CAT_EMOJI = { '海灘':'🏖️','觀景':'🌅','寺廟':'⛩️','咖啡':'☕','市場':'🛒','拍照':'📸','自然':'🌿','夜景':'🌃','美食':'🍜','購物':'🛍️','體驗':'🎡','親子':'🧸','歷史':'🏛️' };
 
@@ -153,6 +154,7 @@ export function renderItinerary(el, engine) {
     currentDay = days.includes(today) ? today : days[0];
   }
   const items = sortedDayItems(engine.data.itinerary, currentDay);
+  const phase = loadPhase(engine.lastSync, engine.online);
 
   // 重繪會重建 .daychips（捲動容器），先記下位置，否則每次點日期都彈回開頭
   const chipsBox0 = el.querySelector('.daychips');
@@ -220,7 +222,8 @@ export function renderItinerary(el, engine) {
 
   el.innerHTML = `
     <div class="daychips">${chips}</div>
-    <div id="it-list">${cards || '<div class="placeholder"><span class="e">📅</span>這天還沒有行程，從下方加入</div>'}</div>
+    <div id="it-list">${phase !== 'ready' ? skeletonHTML(phase, 4)
+      : (cards || '<div class="placeholder"><span class="e">📅</span>這天還沒有行程，從下方加入</div>')}</div>
     <form class="card" id="it-form" data-spot-id="">
       <div style="display:flex;gap:8px">
         <div class="tpick" style="flex:1.2">${timePickerHTML('itt', '')}</div>

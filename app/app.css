@@ -74,6 +74,29 @@ dialog::backdrop{background:rgba(35,23,15,.45)}
 .itmap:active{background:#f6efe1}
 .ithandle{color:#c9bda4;font-size:1.05rem;letter-spacing:-1px;padding:5px 4px;flex:none;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .itedit{border-top:1px dashed var(--line);padding:13px;background:#faf5ea;border-radius:0 0 12px 12px}
+
+/* ---------- 記帳 tab ---------- */
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chipwrap{flex:1 1 calc(33.333% - 4px);min-width:0}
+.chip{display:block;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:.82rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+input:checked + .chip{background:var(--pine);color:var(--hanji);border-color:var(--pine);font-weight:700}
+.pie{width:64px;height:64px;border-radius:50%;flex:none}
+.xrow{padding:0;overflow:hidden;margin-bottom:8px}
+.xmain{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer}
+.xemoji{font-size:1.25rem;flex:none}
+.xtitle{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xsub{font-size:.78rem;color:var(--ink-soft);margin-top:1px}
+.xamt{font-weight:700}
+.xedit{border-top:1px dashed var(--line);padding:13px;background:#faf5ea}
+
+/* ---------- 首次載入骨架 ---------- */
+.skwrap{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.skcard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px}
+.skhdr{display:flex;gap:8px;margin-bottom:10px}
+.skbar{display:block;height:11px;border-radius:6px;margin-bottom:7px;background:linear-gradient(90deg,#e8ddc8 25%,#f4ecdd 37%,#e8ddc8 63%);background-size:400% 100%;animation:skshine 1.4s ease-in-out infinite}
+.skhdr .skbar{height:22px;margin:0;border-radius:7px}
+@keyframes skshine{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.skbar{animation:none}}
 .sortable-ghost{opacity:.35}
 .sortable-chosen{box-shadow:0 16px 34px -14px rgba(35,23,15,.55)}
 .sortable-drag{opacity:.95}
