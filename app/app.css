@@ -44,7 +44,12 @@ dialog{border:1px solid var(--line);border-radius:14px;padding:18px;max-width:42
 dialog::backdrop{background:rgba(35,23,15,.45)}
 
 /* ---------- 行程 tab ---------- */
-.daychips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+/* 吸頂：top 用 JS 量出來的 topbar 實際高度（字體載入、瀏海機型都會改變它）。
+   負邊距讓底色鋪滿整個寬度，否則卡片會從左右空隙透出來。 */
+.daychips{display:flex;gap:8px;overflow-x:auto;padding:8px 14px 12px;margin:0 -14px;
+  position:sticky;top:var(--topbar-h,56px);z-index:9;background:var(--hanji);
+  box-shadow:0 6px 10px -10px rgba(35,23,15,.45);
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
 .daychips::-webkit-scrollbar{display:none}
 .daychip{flex:none;min-width:64px;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:8px 10px 7px;font-size:1rem;color:var(--ink-soft);cursor:pointer;line-height:1.25;text-align:center;font-family:"Noto Serif TC",serif;font-weight:700;transition:transform .15s ease}
 .daychip small{display:block;font-size:.64rem;font-weight:400;font-family:"Noto Sans TC";letter-spacing:.08em;opacity:.8;margin-top:1px}

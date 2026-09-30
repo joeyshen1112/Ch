@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=10">
+<link rel="stylesheet" href="app/app.css?v=11">
 </head>
 <body>
 
@@ -124,6 +124,14 @@ function renderStatus(s) {
     : s.flushing || s.pending ? '↻ 同步中' : '✓ 已同步';
 }
 
+/* 吸頂的日期 chips 需要知道 topbar 實際高度；字體非同步載入與轉向都會改變它 */
+function syncTopbarHeight() {
+  const bar = document.querySelector('.topbar');
+  if (bar) document.documentElement.style.setProperty('--topbar-h', bar.offsetHeight + 'px');
+}
+window.addEventListener('resize', syncTopbarHeight);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncTopbarHeight).catch(() => {});
+
 /* ---------- Tab 路由 ---------- */
 const TABS = {
   itinerary: el => renderItinerary(el, engine),
@@ -175,6 +183,7 @@ if (!pair) {
   showPairView();
 } else {
   $('app-view').hidden = false;
+  syncTopbarHeight();
   engine = new SyncEngine({
     transport: gasTransport(pair),
     storage: localStorage,

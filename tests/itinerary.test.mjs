@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, naverSearchUrl, mapQuery, mapLinkFor, chipScrollTarget, splitTitleEmoji } from '../app/itinerary.js';
+import { dayRange, sortedDayItems, midpoint, insertOrderForTime, needsRenorm, renormalize, naverSearchUrl, mapLinkFor, chipScrollTarget, splitTitleEmoji } from '../app/itinerary.js';
 
 test('dayRange 起訖含端點', () => {
   const days = dayRange('2026-10-22', '2026-10-29');
@@ -58,20 +58,7 @@ test('naverSearchUrl 編碼，空字串回空', () => {
   assert.equal(naverSearchUrl(null), '');
 });
 
-test('mapQuery 去掉開頭 emoji、餐別前綴與括號內容', () => {
-  assert.equal(mapQuery('🍤 晚餐 首選 炸豬排 Tonsyou 南浦'), '炸豬排 Tonsyou 南浦');
-  assert.equal(mapQuery('🍣 Minyeong 活魚工廠 釜田市場店（生魚片壽司）'), 'Minyeong 活魚工廠 釜田市場店');
-  assert.equal(mapQuery('🥘 午餐備案 西班牙俱樂部 海雲台站'), '西班牙俱樂部 海雲台站');
-  assert.equal(mapQuery('🥞 早午餐 Your 類型 田浦直營店'), 'Your 類型 田浦直營店');
-  assert.equal(mapQuery('🍗 宵夜 Out 雞 西面店'), 'Out 雞 西面店');
-});
 
-test('mapQuery 對沒有前綴或括號的標題不動它', () => {
-  assert.equal(mapQuery('🛍 樂天 Outlet 東釜山'), '樂天 Outlet 東釜山');
-  assert.equal(mapQuery('海東龍宮寺'), '海東龍宮寺');
-  assert.equal(mapQuery(''), '');
-  assert.equal(mapQuery(null), '');
-});
 
 test('dayRange 拒絕月曆不存在日期、超長區間截斷 60 天', () => {
   assert.deepEqual(dayRange('2026-02-30', '2026-03-05'), []);
@@ -95,16 +82,17 @@ test('mapLinkFor 第二層：景點沒有韓文名時退回中文名', () => {
   assert.equal(mapLinkFor({ title: 'X' }, { n: '佛國寺', ko: '' }), naverSearchUrl('佛國寺'));
 });
 
-test('mapLinkFor 第三層：沒有 mapUrl 也沒有景點時用清理過的標題搜 Naver', () => {
-  assert.equal(mapLinkFor({ title: '🍜 晚餐 豬肉湯飯 本店（24 小時）' }, null),
-    naverSearchUrl('豬肉湯飯 本店'));
+test('沒有 mapUrl 也沒有景點時不給連結——卡片上就不會有沒用的 📍', () => {
+  assert.equal(mapLinkFor({ title: '🍜 晚餐 豬肉湯飯 本店（24 小時）' }, null), '');
+  assert.equal(mapLinkFor({ title: '🧳 退房' }, null), '');
+  assert.equal(mapLinkFor({ title: '🚕 計程車往多大浦（約 30 分）' }, null), '');
 });
 
 test('mapLinkFor 擋掉非 http(s) 的 mapUrl 並退回下一層', () => {
   assert.equal(mapLinkFor({ title: '佛國寺', mapUrl: 'javascript:alert(1)' }, SPOT), naverSearchUrl('불국사'));
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: '  JavaScript:alert(1)  ' }, null), naverSearchUrl('X'));
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: 'data:text/html,<script>' }, null), naverSearchUrl('X'));
-  assert.equal(mapLinkFor({ title: 'X', mapUrl: '不是網址' }, null), naverSearchUrl('X'));
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '  JavaScript:alert(1)  ' }, null), '');
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: 'data:text/html,<script>' }, null), '');
+  assert.equal(mapLinkFor({ title: 'X', mapUrl: '不是網址' }, null), '');
 });
 
 test('mapLinkFor 三層都沒有時回空字串（不渲染 📍）', () => {

@@ -57,17 +57,7 @@ export function naverSearchUrl(query) {
   return q ? `https://map.naver.com/p/search/${encodeURIComponent(q)}` : '';
 }
 
-/* 把標題整理成適合丟地圖搜尋的字串：去掉開頭 emoji、餐別／首選備案前綴、括號補充 */
-const MEAL_PREFIX = /^(早午餐|早餐|午餐|晚餐|宵夜|下午茶)\s*/;
-const PICK_PREFIX = /^(首選|備案)\s*/;
-
-export function mapQuery(title) {
-  let s = splitTitleEmoji(title).text.replace(/[（(][^）)]*[）)]/g, ' ');
-  for (let i = 0; i < 2; i++) s = s.replace(MEAL_PREFIX, '').replace(PICK_PREFIX, '');
-  return s.replace(/\s+/g, ' ').trim();
-}
-
-/* 地圖連結三層 fallback：手貼網址 → 景點韓文名搜 Naver → 清理過的標題搜 Naver。
+/* 地圖連結兩層：手貼網址 → 景點韓文名搜 Naver。都沒有就不給連結。
  * mapUrl 只收 http/https——Sheet 可被手改，javascript: 會變成 XSS。 */
 /* 日期 chips 的目標捲動位置：已在可視範圍內就原地不動，否則置中。
  * 重繪會重建捲動容器（scrollLeft 歸零），所以每次都要重新算。 */
@@ -97,7 +87,7 @@ export function mapLinkFor(record, spot) {
     } catch (_) { /* 不是合法網址 → 往下退 */ }
   }
   if (spot) return naverSearchUrl(spot.ko || spot.n);
-  return naverSearchUrl(mapQuery(record && record.title));
+  return ''; // 沒有地標可指 → 不給連結，卡片上就不會有搜不到東西的 📍
 }
 
 /* ---------- UI ---------- */
