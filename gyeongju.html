@@ -198,6 +198,16 @@
   }
   .src a:hover{background:var(--pine);color:#f4ecdd}
 
+  /* ---------- 10/23・10/27 有沒有票 ---------- */
+  .dates{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 12px}
+  .dchip{font-size:.78rem;font-weight:700;padding:3px 11px;border-radius:14px;border:1.5px solid;white-space:nowrap}
+  .dchip.y{color:var(--ok);border-color:var(--ok);background:#e6efe9}
+  .dchip.n{color:var(--no);border-color:#d9b3aa;background:#f7e9e5}
+  .subplan .dates{margin:6px 0 0}
+  .matrix.avail td.mine{background:#e6efe9}
+  .matrix.avail .yes{color:var(--ok);font-weight:800;font-size:1rem}
+  .matrix.avail .no{color:var(--no);font-size:.92rem}
+
   /* ---------- SECTION TITLE ---------- */
   .sec-h{display:flex;align-items:center;gap:16px;margin:64px 0 8px}
   .sec-h .num{font-family:"Noto Serif TC";color:var(--brass);font-weight:900;font-size:1.1rem;letter-spacing:.2em}
@@ -281,7 +291,8 @@
   <p>• <b>10 月屬「冬季班（10–3 月）」</b>：多數商品的冬季方案即此季節版本，日落較早，夜景時段會往前移，與夏季班時刻不同。</p>
   <p>• <b>時間資料來源</b>：以下時刻已逐一開啟各商品頁、選定 10 月適用方案後實際讀取，七個方案皆附逐站時間或抵達時刻。</p>
   <p>• <b>集合出口各家不同</b>：①③④ 在 KTX 釜山站 1 號出口；②⑥ 在地鐵釜山站 2 號出口（非 KTX 站）；⑦ 在地鐵釜山站 1 號出口（非 KTX 站）；⑤ 官方寫「釜山車站 1 號出口」。以訂單憑證為準。</p>
-  <p>• <b>2026/10/12 重新核對</b>：七個商品皆仍販售，已依官方頁最新內容更新時刻、成團人數與 10/22–29 可訂日期。</p>
+  <p>• <b>2026/10/12 重新核對</b>：七個商品皆仍販售，已依官方頁最新內容更新時刻與成團人數。</p>
+  <p>• <b>10/23（五）・10/27（二）有沒有票</b>：每張卡片標題下方都有標示，下方另有總表；兩天都有票的是 ②③④⑥。</p>
 </div>
 
 <main class="wrap">
@@ -305,6 +316,7 @@
       <div class="body">
         <p class="pos">時間最透明・午晚餐時段都有</p>
         <h3>新羅古蹟與黃金夜景一日遊</h3>
+        <div class="dates"><span class="dchip n">10/23（五）✗ 沒團</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         <div class="route">佛國寺(1h30m) <span class="arrow">→</span> <b>午餐(1h)</b> <span class="arrow">→</span> 瞻星臺(30m) <span class="arrow">→</span> 大陵苑(1h) <span class="arrow">→</span> 皇理團路(1h30m) <span class="arrow">→</span> <b>晚餐(1h)</b> <span class="arrow">→</span> 月精橋(30m) <span class="arrow">→</span> 東宮與月池(1h10m)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">1 小時 <span class="pill ok">可選含餐</span></div></div>
@@ -318,7 +330,7 @@
             <li>唯一單獨排出 1 小時晚餐、且逐站停留時長全部標清楚；午餐可加購含餐</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
-            <li>成團人數官方前後不一（7 人／9 人）；<b>10/23–25 不開團</b>（10/22、26–29 可訂）</li>
+            <li>成團人數官方前後不一（7 人／9 人）；<b>10/23 沒團</b>（10/27 有票）</li>
             <li>東宮與月池門票：行程標「現場付費」、費用包含卻有列，以訂購時為準</li>
             <li>新上線、尚無評價；僅中文導覽、48 小時內確認，出發前 5 天內取消會扣款</li>
           </ul></div>
@@ -337,6 +349,7 @@
       <div class="body">
         <p class="pos">路線精煉・最早回到釜山</p>
         <h3>慶州全效精華一日遊</h3>
+        <div class="dates"><span class="dchip n">10/23（五）✗ 額滿</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         <div class="route">佛國寺(12:00) <span class="arrow">→</span> <b>午餐(13:00)</b> <span class="arrow">→</span> 瞻星臺・大陵苑(14:00) <span class="arrow">→</span> 皇理團路<b>（晚餐自理）</b> <span class="arrow">→</span> 月精橋(17:30) <span class="arrow">→</span> 東宮與月池(18:00)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">1 小時 <span class="pill ok">可加購</span></div></div>
@@ -350,7 +363,7 @@
             <li>白天到夜景一條龍、含入場費；20:00 海雲台、20:30 西面、20:50 釜山站解散</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
-            <li>成團人數官方頁前後不一（7 人／20 人）；<b>10/23 額滿、10/24–25 週末不出團</b></li>
+            <li>成團人數官方頁前後不一（7 人／20 人）；<b>10/23 額滿</b>（10/27 有票）</li>
             <li>晚餐自理；午餐、韓服需下單時加購（約 +TWD 358／+TWD 298）</li>
             <li>評價僅 61 則（5.0 分）；2 天內確認，出發前 5 天內取消會扣款</li>
           </ul></div>
@@ -369,6 +382,7 @@
       <div class="body">
         <p class="pos">評價最穩・冬日日夜版</p>
         <h3>慶州世界遺產精華（10月至3月）</h3>
+        <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         <div class="route">佛國寺(1h20m) <span class="arrow">→</span> <b>午餐(1h)</b> <span class="arrow">→</span> 校村・月精橋(1h) <span class="arrow">→</span> 大陵苑(1h) <span class="arrow">→</span> 皇理團路(1h)<b>（晚餐自理）</b> <span class="arrow">→</span> 東宮與月池(1h) <span class="arrow">→</span> 月精橋夜景(30m)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">1 小時 <span class="pill self">自費</span></div></div>
@@ -379,7 +393,7 @@
         <div class="pc">
           <div class="good"><h4>優點</h4><ul>
             <li>Klook 特選＋「2026 韓國最佳當地玩樂」，口碑最穩</li>
-            <li>09:30 地鐵釜山站 2 號出口出發、12:00 抵佛國寺；冬季日夜版，10/22–29 每天可訂</li>
+            <li>09:30 地鐵釜山站 2 號出口出發、12:00 抵佛國寺；冬季日夜版，10/23、10/27 都有票</li>
             <li>同商品另有較便宜的「精華與石窟庵」方案（約 NT$926，改走石窟庵＋瞻星臺、不去校村與月精橋，21:20 回釜山站）</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
@@ -401,6 +415,7 @@
       <div class="body">
         <p class="pos">良洞村午餐・天馬塚</p>
         <h3>世界遺產一日遊（A-2）</h3>
+        <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         <div class="route">佛國寺(1h10m) <span class="arrow">→</span> 良洞村(2h15m・午餐) <span class="arrow">→</span> 大陵苑／天馬塚／皇理團路(1h35m) <span class="arrow">→</span> 月精橋(20m) <span class="arrow">→</span> 東宮與月池(1h)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自費</span></div></div>
@@ -436,15 +451,17 @@
           <div class="sph"><span class="tag win">A2・冬季行程</span><span class="badge-yes">✅ 10 月可選</span></div>
           <div class="rt">佛國寺(11:50)<b>（午餐自費）</b> <span class="arrow">→</span> 校村・崔富者宅・慶州鄉校(14:50) <span class="arrow">→</span> 大陵苑(16:00) <span class="arrow">→</span> 皇理團路(16:50)<b>（晚餐自理）</b> <span class="arrow">→</span> 東宮與月池(17:40) <span class="arrow">→</span> 月精橋(18:50)</div>
           <div class="meta">走校村（含崔富者宅、慶州鄉校）｜中英導覽、立即確認｜午晚餐自費｜接駁 09:20 地鐵釜山站 2 號出口／09:40 西面｜21:30 回釜山站</div>
+          <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         </div>
         <div class="subplan applies">
           <div class="sph"><span class="tag sum">B・良洞村路線</span><span class="badge-yes">✅ 10 月可選</span></div>
           <div class="rt">佛國寺(12:10) <span class="arrow">→</span> <b>午餐(13:30)</b> <span class="arrow">→</span> 良洞村(15:30) <span class="arrow">→</span> 瞻星臺(17:10) <span class="arrow">→</span> 大陵苑(17:40) <span class="arrow">→</span> 皇理團路(18:20) <span class="arrow">→</span> 東宮與月池(19:00)</div>
-          <div class="meta">走良洞村＋瞻星臺、不走校村與月精橋｜<b>僅英文導覽</b>｜餐費自理｜10 月仍照夏季時刻：09:50 集合、10:00 從地鐵釜山站 2 號出口出發／10:10 西面｜22:00 回釜山站｜10/22–29 皆可訂</div>
+          <div class="meta">走良洞村＋瞻星臺、不走校村與月精橋｜<b>僅英文導覽</b>｜餐費自理｜10 月仍照夏季時刻：09:50 集合、10:00 從地鐵釜山站 2 號出口出發／10:10 西面｜22:00 回釜山站</div>
+          <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         </div>
         <div class="pc">
           <div class="good"><h4>優點</h4><ul>
-            <li>兩種路線可選：A2 走校村、B 走良洞村＋瞻星臺（10/22–29 皆可訂）</li>
+            <li>兩種路線可選：A2 走校村、B 走良洞村＋瞻星臺（10/23、10/27 都有票）</li>
             <li>午晚餐皆預留自費時段；4.94 分、2.2K 則評價</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
@@ -467,6 +484,7 @@
       <div class="body">
         <p class="pos">老牌穩・含良洞村</p>
         <h3>慶州精選行程（B 方案）</h3>
+        <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip y">10/27（二）✓ 有票</span></div>
         <div class="route">佛國寺(1h10m) <span class="arrow">→</span> 良洞村(2h15m・午餐) <span class="arrow">→</span> 大陵苑(1h35m) <span class="arrow">→</span> 皇理團路 <span class="arrow">→</span> 月精橋(20m) <span class="arrow">→</span> 東宮與月池(1h)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自理</span></div></div>
@@ -477,7 +495,7 @@
         <div class="pc">
           <div class="good"><h4>優點</h4><ul>
             <li>老牌穩定（4.8、11K+ 訂單）；同商品另有 E 方案（慶州＋天空膠囊）</li>
-            <li>B 方案（10–3 月冬季版）含世界遺產良洞村，08:50 集合、09:00 從 KTX 釜山站 1 號出口出發，10/22–29 每天可訂</li>
+            <li>B 方案（10–3 月冬季版）含世界遺產良洞村，08:50 集合、09:00 從 KTX 釜山站 1 號出口出發，10/23、10/27 都有票</li>
           </ul></div>
           <div class="bad"><h4>缺點</h4><ul>
             <li>良洞村停 2h15m、吃掉不少時間；無晚餐時段</li>
@@ -498,6 +516,7 @@
       <div class="body">
         <p class="pos">限定日期・10/23、26、28</p>
         <h3>慶州世界遺產與夜景之旅</h3>
+        <div class="dates"><span class="dchip y">10/23（五）✓ 有票</span><span class="dchip n">10/27（二）✗ 沒團</span></div>
         <div class="route">佛國寺(12:00) <span class="arrow">→</span> 良洞村(13:30・午餐) <span class="arrow">→</span> 大陵苑(16:30) <span class="arrow">→</span> 瞻星臺(17:20) <span class="arrow">→</span> 月精橋(17:50) <span class="arrow">→</span> 東宮與月池(18:30)</div>
         <div class="badges">
           <div class="badge"><div class="k">午餐</div><div class="v">良洞村 <span class="pill self">自理</span></div></div>
@@ -519,6 +538,60 @@
       </div>
     </article>
 
+  </div>
+
+  <!-- AVAILABILITY -->
+  <div class="sec-h">
+    <span class="num">日期</span>
+    <h2>10/23・10/27 有沒有票</h2>
+    <span class="line"></span>
+  </div>
+  <p style="color:var(--ink-soft);font-size:.9rem;margin:6px 0 0">2026/10/12 讀取各商品日曆，名額可能變動，建議早點下單。</p>
+
+  <div class="table-wrap">
+    <table class="matrix avail" style="min-width:0">
+      <thead>
+        <tr>
+          <th>方案</th>
+          <th>10/23<small>五</small></th>
+          <th>10/27<small>二</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="attr">① KKday 579922<small>全效精華一日遊</small></td>
+          <td class="no">✗ 額滿</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">② KKday 131062・A2<small>冬季行程</small></td>
+          <td class="yes mine">✓ 有票</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">② KKday 131062・B<small>良洞村路線</small></td>
+          <td class="yes mine">✓ 有票</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">③ KKday 17654<small>B 方案</small></td>
+          <td class="yes mine">✓ 有票</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">④ Klook 11062<small>A-2</small></td>
+          <td class="yes mine">✓ 有票</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">⑤ Klook 210600<small>黃金夜景</small></td>
+          <td class="no">✗ 沒團</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">⑥ Klook 74147<small>精華（10–3 月）</small></td>
+          <td class="yes mine">✓ 有票</td><td class="yes mine">✓ 有票</td>
+        </tr>
+        <tr>
+          <td class="attr">⑦ Klook 117267<small>夜景之旅（賞楓方案 10/27 有票）</small></td>
+          <td class="yes mine">✓ 有票</td><td class="no">✗ 沒團</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- MATRIX -->
@@ -605,7 +678,7 @@
           <td><span class="tp ok">可加購</span></td>
           <td><span class="tp self">皇理團路・自理</span></td>
           <td>離東宮與月池約 19:00／20:50 回釜山站</td>
-          <td>路線精煉、最早回釜山；10/23–25 不能訂</td>
+          <td>路線精煉、最早回釜山；10/23 額滿</td>
         </tr>
         <tr>
           <td><span class="nm">② KKday 131062・A2</span><br><small>冬季行程路線・10 月可選</small></td>
@@ -640,7 +713,7 @@
           <td><span class="tp ok">可選含餐</span></td>
           <td><span class="tp self">1 小時・自理</span></td>
           <td>約 19:30 離東宮與月池／21:20 回釜山站</td>
-          <td>時間最完整、午晚餐時段都有；10/23–25 不開團</td>
+          <td>時間最完整、午晚餐時段都有；10/23 沒團</td>
         </tr>
         <tr>
           <td><span class="nm">⑥ Klook 74147</span><br><small>精華（10–3 月）・評價最穩</small></td>
@@ -666,7 +739,7 @@
     <div class="row">
       <div class="vc">
         <p class="t">最好掌握行程銜接</p>
-        <p><span class="pick">⑤ Klook 210600</span>：午晚餐時段、逐站時長、回程時間全標清楚，約 19:30 離開慶州、21:20 回釜山站，回程交通最好排（10/23–25 不開團）。</p>
+        <p><span class="pick">⑤ Klook 210600</span>：午晚餐時段、逐站時長、回程時間全標清楚，約 19:30 離開慶州、21:20 回釜山站，回程交通最好排（10/23 沒團，只能選 10/27）。</p>
       </div>
       <div class="vc">
         <p class="t">求口碑安全牌</p>
@@ -674,7 +747,7 @@
       </div>
       <div class="vc">
         <p class="t">想去良洞村</p>
-        <p><span class="pick">③ KKday 17654</span>：老牌、訂單量最大，良洞村停 2h15m 含午餐，21:10 回釜山站、10/22–29 每天可訂；路線與 ④ 幾乎相同，可互相比價。</p>
+        <p><span class="pick">③ KKday 17654</span>：老牌、訂單量最大，良洞村停 2h15m 含午餐，21:10 回釜山站、10/23 和 10/27 都有票；路線與 ④ 幾乎相同，可互相比價。</p>
       </div>
     </div>
   </section>
@@ -683,7 +756,7 @@
 
 <footer>
   <div class="rule"></div>
-  資料整理自 KKday 與 Klook 官方商品頁，2026 年 6 月首次整理，2026 年 10 月 12 日以瀏覽器選定 10 月適用方案重新核對時刻與 10/22–29 可訂日期。實際時刻、用餐安排與成團人數仍以訂購當日官方頁面為準。
+  資料整理自 KKday 與 Klook 官方商品頁，2026 年 6 月首次整理，2026 年 10 月 12 日以瀏覽器選定 10 月適用方案重新核對時刻與 10/23、10/27 有沒有票。實際時刻、用餐安排與成團人數仍以訂購當日官方頁面為準。
 </footer>
 
 <script>
