@@ -1246,9 +1246,12 @@ try {
   if(typeof L === 'undefined') throw new Error('Leaflet not loaded');
   map = L.map('map',{zoomControl:true,scrollWheelZoom:true,fadeAnimation:false}).setView([35.13,129.07],11);
   document.getElementById('map').style.background = '#D7E2DE';
-  tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',{
-    attribution:'&copy; OpenStreetMap contributors &copy; CARTO',
-    subdomains:'abcd', maxZoom:19, crossOrigin:true,
+  // CARTO 自 2026-09 起不再提供免金鑰的點陣圖磚，只會回一張「API KEY REQUIRED」浮水印。
+  // Esri 的幾個免金鑰服務在韓國只有到 z13 左右（再放大是「Map data not yet available」），
+  // 所以改用 OSM 官方圖磚。注意它不走 {s} 子網域。
+  tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap contributors',
+    maxZoom:19, crossOrigin:true,
     updateWhenIdle:true, updateWhenZooming:false, keepBuffer:2
   }).addTo(map);
   tiles.on('tileerror', e=>{
