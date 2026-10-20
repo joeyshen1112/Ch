@@ -6,7 +6,7 @@ export const BUILTIN_PHRASES = [
   // 基本
   { category: '基本', zh: '你好', ko: '안녕하세요', roman: 'an-nyeong-ha-se-yo' },
   { category: '基本', zh: '謝謝', ko: '감사합니다', roman: 'gam-sa-ham-ni-da' },
-  { category: '基本', zh: '不好意思（借過、打擾一下）', ko: '실례합니다', roman: 'sil-lye-ham-ni-da' },
+  { category: '基本', zh: '不好意思（道歉）', ko: '죄송합니다', roman: 'joe-song-ham-ni-da' },
   { category: '基本', zh: '好的', ko: '네, 알겠어요', roman: 'ne, al-ge-sseo-yo' },
   { category: '基本', zh: '再見（自己離開時）', ko: '안녕히 계세요', roman: 'an-nyeong-hi gye-se-yo' },
   // 點餐
@@ -23,6 +23,7 @@ export const BUILTIN_PHRASES = [
   { category: '點餐', zh: '請幫我打包', ko: '포장해 주세요', roman: 'po-jang-hae ju-se-yo' },
   { category: '點餐', zh: '請分開結帳', ko: '따로 계산해 주세요', roman: 'tta-ro gye-san-hae ju-se-yo' },
   // 交通
+  { category: '交通', zh: '請給我收據', ko: '영수증 주세요', roman: 'yeong-su-jeung ju-se-yo' },
   { category: '交通', zh: '請到這裡（給司機看地址）', ko: '여기로 가주세요', roman: 'yeo-gi-ro ga-ju-se-yo' },
   { category: '交通', zh: '請在這裡停', ko: '여기서 세워주세요', roman: 'yeo-gi-seo se-wo-ju-se-yo' },
   { category: '交通', zh: '到這裡多少錢？', ko: '여기까지 얼마예요?', roman: 'yeo-gi-kka-ji eol-ma-ye-yo' },
@@ -33,7 +34,6 @@ export const BUILTIN_PHRASES = [
   { category: '交通', zh: '走路可以到嗎？', ko: '걸어서 갈 수 있어요?', roman: 'geo-reo-seo gal su i-sseo-yo' },
   { category: '交通', zh: '廁所在哪裡？', ko: '화장실이 어디예요?', roman: 'hwa-jang-sil-i eo-di-ye-yo' },
   { category: '交通', zh: '這裡怎麼去（指圖）？', ko: '여기 어떻게 가요?', roman: 'yeo-gi eo-tteo-ke ga-yo' },
-  { category: '交通', zh: '請給我收據', ko: '영수증 주세요', roman: 'yeong-su-jeung ju-se-yo' },
   // 購物
   { category: '購物', zh: '多少錢？', ko: '얼마예요?', roman: 'eol-ma-ye-yo' },
   { category: '購物', zh: '太貴了', ko: '너무 비싸요', roman: 'neo-mu bi-ssa-yo' },
