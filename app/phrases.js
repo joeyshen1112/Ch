@@ -4,6 +4,7 @@ export const PHRASE_CATS = ['基本', '點餐', '交通', '購物', '住宿', '�
 
 export const BUILTIN_PHRASES = [
   // 基本
+  { category: '基本', zh: '可以刷卡嗎？', ko: '카드 돼요?', roman: 'ka-deu dwae-yo' },
   { category: '基本', zh: '你好', ko: '안녕하세요', roman: 'an-nyeong-ha-se-yo' },
   { category: '基本', zh: '謝謝', ko: '감사합니다', roman: 'gam-sa-ham-ni-da' },
   { category: '基本', zh: '不好意思（道歉）', ko: '죄송합니다', roman: 'joe-song-ham-ni-da' },
@@ -19,7 +20,6 @@ export const BUILTIN_PHRASES = [
   { category: '點餐', zh: '請給我水', ko: '물 주세요', roman: 'mul ju-se-yo' },
   { category: '點餐', zh: '很好吃！', ko: '맛있어요!', roman: 'ma-si-sseo-yo' },
   { category: '點餐', zh: '請幫我結帳', ko: '계산해 주세요', roman: 'gye-san-hae ju-se-yo' },
-  { category: '點餐', zh: '可以刷卡嗎？', ko: '카드 되나요?', roman: 'ka-deu doe-na-yo' },
   { category: '點餐', zh: '請幫我打包', ko: '포장해 주세요', roman: 'po-jang-hae ju-se-yo' },
   { category: '點餐', zh: '請分開結帳', ko: '따로 계산해 주세요', roman: 'tta-ro gye-san-hae ju-se-yo' },
   // 交通
