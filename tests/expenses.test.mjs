@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { expenseTotals, toTWD, todayStr, payerTotals, payerLabel } from '../app/expenses.js';
+import { expenseTotals, toTWD, todayStr, payerTotals, payerLabel, categoryBreakdown } from '../app/expenses.js';
 
 test('toTWD：KRW 依匯率折算、TWD 原值、四捨五入', () => {
   assert.equal(toTWD({ amount: 18000, currency: 'KRW' }, 0.023), 414);
@@ -61,4 +61,25 @@ test('payerLabel：加上辨識用的 emoji，未知值原樣回傳', () => {
   assert.equal(payerLabel(''), '');
   assert.equal(payerLabel(null), '');
   assert.equal(payerLabel(undefined), '');
+});
+
+/* ---------- 圓餅分類明細 ---------- */
+
+test('categoryBreakdown：依分類順序、算比例與筆數，未知分類排最後', () => {
+  const records = [
+    { date: '2026-10-24', category: '購物', amount: 300, currency: 'TWD', deleted: 0 },
+    { date: '2026-10-24', category: '餐飲', amount: 100, currency: 'TWD', deleted: 0 },
+    { date: '2026-10-24', category: '餐飲', amount: 100, currency: 'TWD', deleted: 0 },
+    { date: '2026-10-24', category: '伴手禮', amount: 500, currency: 'TWD', deleted: 0 },
+  ];
+  const t = expenseTotals(records, 0.023, '2026-10-24');
+  const parts = categoryBreakdown(t.byCat, t.countByCat, t.totalTWD);
+  assert.deepEqual(parts.map(p => p.cat), ['餐飲', '購物', '伴手禮']);
+  assert.deepEqual(parts.map(p => p.count), [2, 1, 1]);
+  assert.deepEqual(parts.map(p => p.pct), [20, 30, 50]);
+  assert.equal(new Set(parts.map(p => p.color)).size, 3); // 各分類顏色不同
+});
+
+test('categoryBreakdown：沒有花費回空陣列', () => {
+  assert.deepEqual(categoryBreakdown({}, {}, 0), []);
 });

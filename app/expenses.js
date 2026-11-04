@@ -36,28 +36,73 @@ export function payerTotals(records, rate) {
 
 export function expenseTotals(records, rate, today) {
   const live = records.filter(r => Number(r.deleted) !== 1);
-  const out = { todayTWD: 0, totalTWD: 0, byCat: {} };
+  const out = { todayTWD: 0, totalTWD: 0, byCat: {}, countByCat: {} };
   for (const r of live) {
     const twd = toTWD(r, rate);
     out.totalTWD += twd;
     if (r.date === today) out.todayTWD += twd;
     out.byCat[r.category] = (out.byCat[r.category] || 0) + twd;
+    out.countByCat[r.category] = (out.countByCat[r.category] || 0) + 1;
   }
   return out;
+}
+
+const PIE_COLORS = ['#3c6a5d','#bf962f','#b23528','#c4642a','#1f4339','#7d7a6a'];
+
+/* 圓餅與分類明細共用：依 CATEGORIES 順序，Sheet 手改出的未知分類排最後；顏色依出現順序配，兩邊才對得上 */
+export function categoryBreakdown(byCat, countByCat, total) {
+  if (!total) return [];
+  const known = CATEGORIES.map(([c]) => c);
+  const cats = known.filter(c => byCat[c]).concat(Object.keys(byCat).filter(c => !known.includes(c) && byCat[c]));
+  return cats.map((c, i) => ({
+    cat: c || '未分類',
+    emoji: catEmoji(c),
+    twd: byCat[c],
+    count: (countByCat && countByCat[c]) || 0,
+    pct: (byCat[c] / total) * 100,
+    color: PIE_COLORS[i % PIE_COLORS.length],
+  }));
 }
 
 const fmtAmt = r => (r.currency === 'TWD' ? `NT$ ${Number(r.amount).toLocaleString()}` : `₩ ${Number(r.amount).toLocaleString()}`);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const PIE_COLORS = ['#3c6a5d','#bf962f','#b23528','#c4642a','#1f4339','#7d7a6a'];
-function pieCSS(byCat, total) {
-  if (!total) return '';
+function pieCSS(parts) {
+  if (!parts.length) return '';
   let acc = 0;
-  const stops = CATEGORIES.filter(([c]) => byCat[c]).map(([c], i) => {
-    const from = acc; acc += (byCat[c] / total) * 100;
-    return `${PIE_COLORS[i % PIE_COLORS.length]} ${from.toFixed(1)}% ${acc.toFixed(1)}%`;
+  const stops = parts.map(p => {
+    const from = acc; acc += p.pct;
+    return `${p.color} ${from.toFixed(1)}% ${acc.toFixed(1)}%`;
   });
   return `background:conic-gradient(${stops.join(',')})`;
+}
+
+/* 點圓餅彈出分類明細。dialog 掛在 body 而非 tab 內：背景同步每 20 秒重繪 tab，掛在裡面會被關掉 */
+function pieDialog() {
+  let dlg = document.getElementById('pie-dlg');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'pie-dlg';
+    document.body.appendChild(dlg);
+    dlg.addEventListener('click', ev => {
+      if (ev.target === dlg || ev.target.closest('.pd-close')) dlg.close(); // 點遮罩或關閉鈕
+    });
+  }
+  return dlg;
+}
+function fillPieDialog(dlg, parts, total) {
+  dlg.innerHTML = `
+    <h3 style="margin:0 0 12px">花費分類</h3>
+    <div class="pie big" style="${pieCSS(parts)}"></div>
+    <div class="muted" style="text-align:center;margin:10px 0 12px">總計 <b style="color:var(--ink);font-size:1.1rem">NT$ ${total.toLocaleString()}</b></div>
+    ${parts.map(p => `
+      <div class="pd-row">
+        <span class="pd-dot" style="background:${p.color}"></span>
+        <span class="pd-cat">${p.emoji} ${esc(p.cat)}<small>${p.count} 筆</small></span>
+        <span class="pd-amt">NT$ ${p.twd.toLocaleString()}<small>${p.pct.toFixed(1)}%</small></span>
+      </div>
+      <div class="pd-bar"><span style="width:${p.pct.toFixed(1)}%;background:${p.color}"></span></div>`).join('')}
+    <button class="btn ghost pd-close" type="button" style="width:100%;margin-top:14px">關閉</button>`;
 }
 
 /* 付款人記在本機（各自的手機各自預設），不進同步資料 */
@@ -87,6 +132,7 @@ export function renderExpenses(el, engine) {
     .filter(r => Number(r.deleted) !== 1)
     .sort((a, b) => String(b.date).localeCompare(String(a.date)) || Number(b.updatedAt) - Number(a.updatedAt));
   const totals = expenseTotals(records, rate, today);
+  const parts = categoryBreakdown(totals.byCat, totals.countByCat, totals.totalTWD);
   const byPayer = payerTotals(records, rate);
 
   const rowHTML = r => {
@@ -172,11 +218,13 @@ export function renderExpenses(el, engine) {
       </div>
     </form>
     <div class="card" style="display:flex;gap:14px;align-items:center">
-      <div class="pie" style="${pieCSS(totals.byCat, totals.totalTWD)}"></div>
+      ${parts.length
+        ? `<button type="button" class="pie" id="x-pie" aria-label="查看花費分類" style="${pieCSS(parts)}"></button>`
+        : '<div class="pie"></div>'}
       <div style="flex:1;min-width:0">
         <div class="muted">總計 <b style="color:var(--ink);font-size:1.1rem">NT$ ${totals.totalTWD.toLocaleString()}</b></div>
         ${payerLine}
-        <div class="muted" style="font-size:.72rem">匯率 1 KRW = ${rate} TWD（⚙ 可改）</div>
+        <div class="muted" style="font-size:.72rem">匯率 1 KRW = ${rate} TWD（⚙ 可改）${parts.length ? '・點圓餅看分類' : ''}</div>
       </div>
     </div>
     ${phase !== 'ready' ? skeletonHTML(phase, 3)
@@ -193,6 +241,17 @@ export function renderExpenses(el, engine) {
       if (hit) hit.checked = true;
     }
     if (saved.focusId) { const t = el.querySelector('#' + saved.focusId); if (t) t.focus(); }
+  }
+
+  const pieBtn = el.querySelector('#x-pie');
+  if (pieBtn) pieBtn.onclick = () => {
+    const dlg = pieDialog();
+    fillPieDialog(dlg, parts, totals.totalTWD);
+    dlg.showModal();
+  };
+  const openDlg = document.getElementById('pie-dlg');
+  if (openDlg && openDlg.open) { // 開著時同步到新帳目就順便更新；帳全刪光就關掉
+    if (parts.length) fillPieDialog(openDlg, parts, totals.totalTWD); else openDlg.close();
   }
 
   el.querySelector('#x-form').onsubmit = ev => {

@@ -88,7 +88,18 @@ dialog::backdrop{background:rgba(35,23,15,.45)}
 .chipwrap{flex:1 1 calc(33.333% - 4px);min-width:0}
 .chip{display:block;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:.82rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 input:checked + .chip{background:var(--pine);color:var(--hanji);border-color:var(--pine);font-weight:700}
-.pie{width:64px;height:64px;border-radius:50%;flex:none}
+.pie{width:64px;height:64px;border-radius:50%;flex:none;border:0;padding:0;background:var(--line)}
+button.pie{cursor:pointer;box-shadow:0 0 0 3px var(--card),0 0 0 4.5px var(--line);transition:transform .15s ease}
+button.pie:active{transform:scale(.94)}
+.pie.big{width:180px;height:180px;margin:0 auto;display:block}
+#pie-dlg{max-height:calc(100vh - 80px);overflow:auto}
+.pd-row{display:flex;align-items:center;gap:9px;margin-top:10px}
+.pd-dot{width:12px;height:12px;border-radius:3px;flex:none}
+.pd-cat{flex:1;min-width:0;font-weight:700}
+.pd-cat small,.pd-amt small{display:block;font-weight:400;font-size:.74rem;color:var(--ink-soft)}
+.pd-amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.pd-bar{height:5px;border-radius:3px;background:var(--line);margin:5px 0 0 21px;overflow:hidden}
+.pd-bar span{display:block;height:100%;border-radius:3px}
 .xrow{padding:0;overflow:hidden;margin-bottom:8px}
 .xmain{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer}
 .xemoji{font-size:1.25rem;flex:none}
