@@ -1,11 +1,12 @@
 /* sw.js — app shell cache-first；GAS／跨域請求一律不攔截（離線寫入由 app/sync.js 佇列處理）
  * 改動 SHELL 內任何檔案時，必須 bump CACHE 版本（tt-vN）。 */
-const CACHE = 'tt-v19'; // v19: 旅程名稱與日期改由設定決定
+const CACHE = 'tt-v20'; // v20: 一支手機可存多份行程、點標題切換
 const SHELL = [
   './app.html',
   './manifest.json',
-  './app/app.css?v=12',
+  './app/app.css?v=13',
   './app/sync.js',
+  './app/trips.js',
   './app/ui.js',
   './app/itinerary.js',
   './app/expenses.js',

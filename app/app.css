@@ -12,6 +12,14 @@ button{font-family:inherit}
 .topbar{position:sticky;top:0;z-index:10;background:var(--pine);color:var(--hanji);padding:10px 14px calc(10px);display:flex;align-items:center;gap:10px}
 .topbar h1{font-size:1.05rem;margin:0;flex:1;letter-spacing:.05em}
 .topbar .sub{font-size:.68rem;opacity:.75;display:block;font-family:"Noto Sans TC"}
+#trip-switch{all:unset;cursor:pointer;display:block;font:inherit;letter-spacing:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+#trip-switch:active{opacity:.7}
+#trip-switch .caret{font-size:.7em;opacity:.7}
+/* 切換行程清單 */
+.trip-row{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 8px;color:var(--ink);cursor:pointer}
+.trip-row.on{border-color:var(--celadon);background:#eef3ef}
+.trip-row .tr-title{display:block;font-weight:700}
+.trip-row .tr-dates{display:block;font-size:.78rem;color:var(--ink-soft)}
 .sync{font-size:.72rem;padding:4px 10px;border-radius:14px;background:rgba(244,236,221,.14);white-space:nowrap}
 .sync.off{background:var(--vermilion)}
 .iconbtn{background:none;border:0;color:var(--hanji);font-size:1.1rem;padding:6px;cursor:pointer}

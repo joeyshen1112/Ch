@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=12">
+<link rel="stylesheet" href="app/app.css?v=13">
 </head>
 <body>
 
@@ -30,6 +30,7 @@
       <input id="pair-code" autocomplete="off" placeholder="eyJ1cmwiOi...">
       <p id="pair-err" class="muted" style="color:var(--vermilion)" hidden>配對碼格式不對，再確認一次。</p>
       <button class="btn" id="pair-go" style="margin-top:12px;width:100%">開始使用</button>
+      <button class="btn ghost" id="pair-cancel" style="margin-top:8px;width:100%" hidden>取消，回到原本的行程</button>
     </div>
   </main>
 </div>
@@ -37,7 +38,7 @@
 <!-- 主畫面 -->
 <div id="app-view" hidden>
   <header class="topbar">
-    <h1><span id="trip-title">釜山旅遊工具</span><span class="sub" id="trip-dates">2026.10.22 – 10.29</span></h1>
+    <h1><button type="button" id="trip-switch" aria-label="切換行程"><span id="trip-title">釜山旅遊工具</span> <span class="caret">▾</span><span class="sub" id="trip-dates">2026.10.22 – 10.29</span></button></h1>
     <span class="sync" id="sync-status">…</span>
     <button class="iconbtn" id="refresh" title="手動同步">↻</button>
     <button class="iconbtn" id="settings" title="設定">⚙</button>
@@ -66,13 +67,25 @@
     <button class="btn ghost" id="dlg-close">關閉</button>
   </div>
   <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
-  <button class="btn warn" id="unpair">重設配對碼</button>
+  <button class="btn warn" id="unpair">從這支手機移除這份行程</button>
+  <p class="muted" style="font-size:.78rem;margin:8px 0 0">只會從這支手機拿掉，雲端的試算表和別人手機上的資料都不受影響。</p>
+</dialog>
+
+<!-- 行程清單：只列這支手機配對過的 -->
+<dialog id="trips-dlg">
+  <h3 style="margin:0 0 10px">🧳 切換行程</h3>
+  <div id="trips-list"></div>
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button class="btn" id="trip-add">＋ 加入另一份</button>
+    <button class="btn ghost" id="trips-close">關閉</button>
+  </div>
 </dialog>
 
 <script src="app/vendor/Sortable.min.js"></script>
 <script type="module">
 import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, isInAppBrowser, LS } from './app/sync.js';
 import { withMinDuration } from './app/ui.js';
+import { migrateLegacy, listTrips, currentTrip, addTrip, switchTrip, removeTrip, tripStorage, tripLabel } from './app/trips.js';
 import { renderExpenses } from './app/expenses.js';
 import { renderItinerary } from './app/itinerary.js';
 import { renderPhrases } from './app/phrases.js';
@@ -81,24 +94,15 @@ const $ = id => document.getElementById(id);
 let engine = null;
 
 /* ---------- 配對 ---------- */
-function getPair() {
-  try { return JSON.parse(localStorage.getItem(LS.pair)); } catch (_) { return null; }
-}
+migrateLegacy(localStorage);
+function getPair() { return currentTrip(localStorage); }
 function showPairView() {
   $('app-view').hidden = true;
   $('pair-view').hidden = false;
   if (isInAppBrowser(navigator.userAgent)) $('inapp-warn').hidden = false;
 }
-/* 換後端（或首次配對）時，本地快取屬於另一份 Sheet，必須一併清掉避免混資料 */
-function savePair(next) {
-  const cur = getPair();
-  if (!cur || cur.url !== next.url || cur.token !== next.token) {
-    localStorage.removeItem(LS.data);
-    localStorage.removeItem(LS.queue);
-    localStorage.removeItem(LS.lastSync);
-  }
-  localStorage.setItem(LS.pair, JSON.stringify(next));
-}
+/* 新的配對碼＝加入一份行程並切過去；各份行程的快取分開放，不會互相清掉 */
+function savePair(next) { addTrip(localStorage, next); }
 $('pair-go').onclick = () => {
   const pair = decodePairCode($('pair-code').value);
   if (!pair) { $('pair-err').hidden = false; return; }
@@ -119,8 +123,9 @@ function consumePairLink() {
 function renderStatus(s) {
   const el = $('sync-status');
   if (s.unauthorized) {
-    localStorage.removeItem(LS.pair);
-    alert('配對已失效，請重新輸入配對碼');
+    const cur = getPair();
+    if (cur) removeTrip(localStorage, cur.id);
+    alert('這份行程的配對已失效（TOKEN 可能換了），已從這支手機移除，請重新貼上新的配對碼');
     location.reload();
     return;
   }
@@ -150,12 +155,9 @@ function currentTab() {
 }
 /* 標題與日期跟著 settings 走（tripTitle / tripStart / tripEnd），一份 Sheet 一趟旅程 */
 function renderHeader() {
-  const g = k => { const r = engine.data.settings[k]; return r && r.value; };
-  const title = g('tripTitle') || '釜山旅遊工具';
-  const start = g('tripStart') || '2026-10-22', end = g('tripEnd') || '2026-10-29';
-  const fmt = d => d.slice(5).replace('-', '.');
+  const { title, dates } = tripLabel(localStorage, getPair().id); // engine 每次變更都先存檔再通知，讀快取即最新
   $('trip-title').textContent = title;
-  $('trip-dates').textContent = `${start.slice(0, 4)}.${fmt(start)} – ${fmt(end)}`;
+  $('trip-dates').textContent = dates;
   document.title = title;
 }
 function renderTab() {
@@ -190,7 +192,46 @@ $('rate-save').onclick = () => {
   $('settings-dlg').close();
 };
 $('unpair').onclick = () => {
-  if (confirm('確定要重設配對碼？')) { localStorage.removeItem(LS.pair); localStorage.removeItem(LS.lastSync); location.reload(); }
+  const cur = getPair();
+  if (confirm(`確定要從這支手機移除「${tripLabel(localStorage, cur.id).title}」？之後要再用，需重新貼上它的配對碼。`)) {
+    removeTrip(localStorage, cur.id);
+    location.reload();
+  }
+};
+
+/* ---------- 切換行程 ---------- */
+function renderTripList() {
+  const cur = getPair();
+  const list = $('trips-list');
+  list.innerHTML = '';
+  for (const t of listTrips(localStorage)) {
+    const { title, dates } = tripLabel(localStorage, t.id);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'trip-row' + (t.id === cur.id ? ' on' : '');
+    b.innerHTML = '<span class="tr-title"></span><span class="tr-dates"></span>';
+    b.querySelector('.tr-title').textContent = (t.id === cur.id ? '✓ ' : '') + title;
+    b.querySelector('.tr-dates').textContent = dates;
+    b.onclick = () => {
+      if (t.id === cur.id) { $('trips-dlg').close(); return; }
+      switchTrip(localStorage, t.id);
+      location.reload();
+    };
+    list.appendChild(b);
+  }
+}
+$('trip-switch').onclick = () => { renderTripList(); $('trips-dlg').showModal(); };
+$('trips-close').onclick = () => $('trips-dlg').close();
+$('trip-add').onclick = () => {
+  $('trips-dlg').close();
+  $('pair-code').value = '';
+  $('pair-err').hidden = true;
+  $('pair-cancel').hidden = false;
+  showPairView();
+};
+$('pair-cancel').onclick = () => {
+  $('pair-view').hidden = true;
+  $('app-view').hidden = false;
 };
 $('refresh').onclick = async () => {
   const btn = $('refresh');
@@ -211,7 +252,7 @@ if (!pair) {
   syncTopbarHeight();
   engine = new SyncEngine({
     transport: gasTransport(pair),
-    storage: localStorage,
+    storage: tripStorage(localStorage, pair.id),
     onChange: renderTab,
     onStatus: renderStatus,
   });
