@@ -17,7 +17,11 @@ button{font-family:inherit}
 #trip-switch .caret{font-size:.7em;opacity:.7}
 /* 切換行程清單 */
 .trip-row{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 8px;color:var(--ink);cursor:pointer}
-.trip-row.on{border-color:var(--celadon);background:#eef3ef}
+.trip-row{position:relative;-webkit-tap-highlight-color:transparent}
+.trip-row:focus{outline:none}
+.trip-row:focus-visible{outline:2px dashed var(--ink-soft);outline-offset:2px}
+.trip-row.on{border:2px solid var(--pine);background:#e6efe9;padding:9px 11px}
+.trip-row .tr-now{position:absolute;top:50%;right:12px;transform:translateY(-50%);background:var(--pine);color:var(--hanji);font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 10px}
 .trip-row .tr-title{display:block;font-weight:700}
 .trip-row .tr-dates{display:block;font-size:.78rem;color:var(--ink-soft)}
 .sync{font-size:.72rem;padding:4px 10px;border-radius:14px;background:rgba(244,236,221,.14);white-space:nowrap}

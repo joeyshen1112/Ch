@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=13">
+<link rel="stylesheet" href="app/app.css?v=14">
 </head>
 <body>
 
@@ -210,7 +210,8 @@ function renderTripList() {
     b.type = 'button';
     b.className = 'trip-row' + (t.id === cur.id ? ' on' : '');
     b.innerHTML = '<span class="tr-title"></span><span class="tr-dates"></span>';
-    b.querySelector('.tr-title').textContent = (t.id === cur.id ? '✓ ' : '') + title;
+    b.querySelector('.tr-title').textContent = title;
+    if (t.id === cur.id) b.insertAdjacentHTML('beforeend', '<span class="tr-now">目前</span>');
     b.querySelector('.tr-dates').textContent = dates;
     b.onclick = () => {
       if (t.id === cur.id) { $('trips-dlg').close(); return; }
@@ -220,7 +221,12 @@ function renderTripList() {
     list.appendChild(b);
   }
 }
-$('trip-switch').onclick = () => { renderTripList(); $('trips-dlg').showModal(); };
+$('trip-switch').onclick = () => {
+  renderTripList();
+  $('trips-dlg').showModal();
+  // showModal 會自動把焦點給第一個按鈕，iOS 畫出的藍框看起來像「選中」，跟真正目前那份打架
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+};
 $('trips-close').onclick = () => $('trips-dlg').close();
 $('trip-add').onclick = () => {
   $('trips-dlg').close();
