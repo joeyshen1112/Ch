@@ -10,7 +10,8 @@ const SHEET_TABS = {
 };
 
 /* Sheets 會把日期樣式文字自動轉成 Date；讀取時就地正規化回字串 */
-const FIELD_FORMATS = { day: 'yyyy-MM-dd', date: 'yyyy-MM-dd', time: 'HH:mm' };
+/* settings 的 value 也會中招（tripStart / tripEnd 從 App 存進來會被轉成 Date），一併轉回日期字串 */
+const FIELD_FORMATS = { day: 'yyyy-MM-dd', date: 'yyyy-MM-dd', time: 'HH:mm', value: 'yyyy-MM-dd' };
 function normalize_(field, value) {
   if (value instanceof Date && FIELD_FORMATS[field]) {
     return Utilities.formatDate(value, Session.getScriptTimeZone(), FIELD_FORMATS[field]);
