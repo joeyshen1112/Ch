@@ -37,7 +37,7 @@
 <!-- 主畫面 -->
 <div id="app-view" hidden>
   <header class="topbar">
-    <h1>釜山旅遊工具<span class="sub">2026.10.22 – 10.29</span></h1>
+    <h1><span id="trip-title">釜山旅遊工具</span><span class="sub" id="trip-dates">2026.10.22 – 10.29</span></h1>
     <span class="sync" id="sync-status">…</span>
     <button class="iconbtn" id="refresh" title="手動同步">↻</button>
     <button class="iconbtn" id="settings" title="設定">⚙</button>
@@ -53,6 +53,12 @@
 <!-- 設定 -->
 <dialog id="settings-dlg">
   <h3 style="margin:0 0 10px">⚙ 設定</h3>
+  <label class="field" for="title-input">旅程名稱</label>
+  <input id="title-input" placeholder="釜山旅遊工具">
+  <label class="field" for="start-input">開始日期</label>
+  <input id="start-input" type="date">
+  <label class="field" for="end-input">結束日期</label>
+  <input id="end-input" type="date">
   <label class="field" for="rate-input">匯率（1 KRW = ? TWD，兩機共用）</label>
   <input id="rate-input" inputmode="decimal">
   <div style="display:flex;gap:10px;margin-top:14px">
@@ -142,7 +148,18 @@ function currentTab() {
   const h = location.hash.replace('#', '');
   return TABS[h] ? h : (localStorage.getItem(LS.tab) || 'expenses');
 }
+/* 標題與日期跟著 settings 走（tripTitle / tripStart / tripEnd），一份 Sheet 一趟旅程 */
+function renderHeader() {
+  const g = k => { const r = engine.data.settings[k]; return r && r.value; };
+  const title = g('tripTitle') || '釜山旅遊工具';
+  const start = g('tripStart') || '2026-10-22', end = g('tripEnd') || '2026-10-29';
+  const fmt = d => d.slice(5).replace('-', '.');
+  $('trip-title').textContent = title;
+  $('trip-dates').textContent = `${start.slice(0, 4)}.${fmt(start)} – ${fmt(end)}`;
+  document.title = title;
+}
 function renderTab() {
+  renderHeader();
   const tab = currentTab();
   localStorage.setItem(LS.tab, tab);
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
@@ -153,15 +170,23 @@ window.addEventListener('hashchange', renderTab);
 
 /* ---------- 設定 ---------- */
 $('settings').onclick = () => {
-  const rec = engine.data.settings.exchangeRate;
-  $('rate-input').value = rec ? rec.value : '0.023';
+  const g = k => { const r = engine.data.settings[k]; return r && r.value; };
+  $('rate-input').value = g('exchangeRate') || '0.023';
+  $('title-input').value = g('tripTitle') || '';
+  $('start-input').value = g('tripStart') || '2026-10-22';
+  $('end-input').value = g('tripEnd') || '2026-10-29';
   $('settings-dlg').showModal();
 };
 $('dlg-close').onclick = () => $('settings-dlg').close();
 $('rate-save').onclick = () => {
   const v = parseFloat($('rate-input').value);
   if (!Number.isFinite(v) || v <= 0) return;
-  engine.upsert('settings', { key: 'exchangeRate', value: String(v) });
+  const start = $('start-input').value, end = $('end-input').value;
+  if (!start || !end || start > end) { alert('結束日期不能早於開始日期'); return; }
+  const g = k => { const r = engine.data.settings[k]; return r && r.value; };
+  const next = { exchangeRate: String(v), tripTitle: $('title-input').value.trim(), tripStart: start, tripEnd: end };
+  // 只送有變的欄位，避免沒改的值也去蓋掉另一台剛改的
+  Object.entries(next).forEach(([key, value]) => { if ((g(key) || '') !== value) engine.upsert('settings', { key, value }); });
   $('settings-dlg').close();
 };
 $('unpair').onclick = () => {
