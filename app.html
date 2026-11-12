@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#16332c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app/app.css?v=14">
+<link rel="stylesheet" href="app/app.css?v=15">
 </head>
 <body>
 
@@ -60,8 +60,10 @@
   <input id="start-input" type="date">
   <label class="field" for="end-input">結束日期</label>
   <input id="end-input" type="date">
-  <label class="field" for="rate-input">匯率（1 KRW = ? TWD，兩機共用）</label>
-  <input id="rate-input" inputmode="decimal">
+  <div id="rate-field">
+    <label class="field" for="rate-input">匯率（1 KRW = ? TWD，兩機共用）</label>
+    <input id="rate-input" inputmode="decimal">
+  </div>
   <div style="display:flex;gap:10px;margin-top:14px">
     <button class="btn" id="rate-save">儲存</button>
     <button class="btn ghost" id="dlg-close">關閉</button>
@@ -85,7 +87,7 @@
 <script type="module">
 import { SyncEngine, gasTransport, decodePairCode, readPairFromUrl, isInAppBrowser, LS } from './app/sync.js';
 import { withMinDuration } from './app/ui.js';
-import { migrateLegacy, listTrips, currentTrip, addTrip, switchTrip, removeTrip, tripStorage, tripLabel } from './app/trips.js';
+import { migrateLegacy, listTrips, currentTrip, addTrip, switchTrip, removeTrip, tripStorage, tripLabel, tripFeatures } from './app/trips.js';
 import { renderExpenses } from './app/expenses.js';
 import { renderItinerary } from './app/itinerary.js';
 import { renderPhrases } from './app/phrases.js';
@@ -149,9 +151,22 @@ const TABS = {
   expenses: el => renderExpenses(el, engine),
   phrases: el => renderPhrases(el, engine),
 };
+/* 這份行程開放哪些分頁、字體多大（寫在該份 settings；沒設定 = 三個分頁、原尺寸） */
+const features = () => tripFeatures(engine.data.settings);
 function currentTab() {
+  const { tabs } = features();
   const h = location.hash.replace('#', '');
-  return TABS[h] ? h : (localStorage.getItem(LS.tab) || 'expenses');
+  if (tabs.includes(h)) return h;
+  const saved = localStorage.getItem(LS.tab);
+  return tabs.includes(saved) ? saved : (tabs.includes('expenses') ? 'expenses' : tabs[0]);
+}
+function applyFeatures() {
+  const { tabs, fontScale } = features();
+  document.documentElement.style.fontSize = fontScale === 1 ? '' : `${fontScale * 100}%`;
+  document.querySelectorAll('.tabs button').forEach(b => { b.hidden = !tabs.includes(b.dataset.tab); });
+  document.body.classList.toggle('single-tab', tabs.length === 1); // 只剩一頁就收起底部分頁列
+  $('rate-field').hidden = !tabs.includes('expenses');
+  syncTopbarHeight(); // 字體變了，吸頂日期列要跟著重算
 }
 /* 標題與日期跟著 settings 走（tripTitle / tripStart / tripEnd），一份 Sheet 一趟旅程 */
 function renderHeader() {
@@ -161,9 +176,10 @@ function renderHeader() {
   document.title = title;
 }
 function renderTab() {
+  applyFeatures();
   renderHeader();
   const tab = currentTab();
-  localStorage.setItem(LS.tab, tab);
+  if (features().tabs.length > 1) localStorage.setItem(LS.tab, tab); // 單頁行程不要蓋掉其他行程記住的分頁
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   TABS[tab]($('tab-content'));
 }

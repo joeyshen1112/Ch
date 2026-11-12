@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { memStorage, LS } from '../app/sync.js';
-import { migrateLegacy, listTrips, currentTrip, addTrip, switchTrip, removeTrip, tripStorage, tripLabel, tripIdOf } from '../app/trips.js';
+import { migrateLegacy, listTrips, currentTrip, addTrip, switchTrip, removeTrip, tripStorage, tripLabel, tripIdOf, tripFeatures } from '../app/trips.js';
 
 const A = { url: 'https://script.google.com/macros/s/AAA/exec', token: 'ta' };
 const B = { url: 'https://script.google.com/macros/s/BBB/exec', token: 'tb' };
@@ -89,4 +89,22 @@ test('清單標籤：讀該份的名稱與日期，沒設定用預設', () => {
   } }));
   assert.deepEqual(tripLabel(s, 'n'), { title: '東京', dates: '2026.11.16 – 11.19' });
   assert.deepEqual(tripLabel(s, 'none'), { title: '釜山旅遊工具', dates: '2026.10.22 – 10.29' });
+});
+
+test('畫面設定：沒設定就是三個分頁、原尺寸', () => {
+  assert.deepEqual(tripFeatures({}), { tabs: ['itinerary', 'expenses', 'phrases'], fontScale: 1 });
+  assert.deepEqual(tripFeatures(undefined), { tabs: ['itinerary', 'expenses', 'phrases'], fontScale: 1 });
+});
+
+test('畫面設定：只留行程、字體 1.2 倍', () => {
+  const st = { tabs: { key: 'tabs', value: 'itinerary' }, fontScale: { key: 'fontScale', value: '1.2' } };
+  assert.deepEqual(tripFeatures(st), { tabs: ['itinerary'], fontScale: 1.2 });
+});
+
+test('畫面設定：寫錯的分頁忽略、順序固定、倍率限制在 1–1.5', () => {
+  const f = v => tripFeatures({ tabs: { value: v.tabs }, fontScale: { value: v.scale } });
+  assert.deepEqual(f({ tabs: ' phrases , itinerary,abc', scale: '9' }), { tabs: ['itinerary', 'phrases'], fontScale: 1.5 });
+  assert.deepEqual(f({ tabs: 'abc', scale: '0.5' }).tabs, ['itinerary', 'expenses', 'phrases']);
+  assert.equal(f({ tabs: '', scale: '0.5' }).fontScale, 1);
+  assert.equal(f({ tabs: '', scale: 'big' }).fontScale, 1);
 });

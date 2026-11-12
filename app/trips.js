@@ -83,3 +83,18 @@ export function tripLabel(storage, id) {
   const fmt = d => String(d).slice(5).replace('-', '.');
   return { title: g('tripTitle') || '釜山旅遊工具', dates: `${String(start).slice(0, 4)}.${fmt(start)} – ${fmt(end)}` };
 }
+
+/* 每份行程可以有自己的畫面設定（寫在該份試算表的 settings 分頁）：
+ *   tabs      = 'itinerary' 或 'itinerary,expenses'…（沒設定或寫錯 → 三個都顯示）
+ *   fontScale = 1.2 之類（限制在 1–1.5 倍，沒設定 → 1） */
+export const ALL_TABS = ['itinerary', 'expenses', 'phrases'];
+export function tripFeatures(settings) {
+  const g = k => settings && settings[k] && settings[k].value;
+  const tabs = String(g('tabs') || '').split(',').map(s => s.trim()).filter(t => ALL_TABS.includes(t));
+  const raw = g('fontScale');
+  const scale = raw === undefined || raw === '' ? NaN : Number(raw);
+  return {
+    tabs: tabs.length ? ALL_TABS.filter(t => tabs.includes(t)) : ALL_TABS.slice(),
+    fontScale: Number.isFinite(scale) ? Math.min(Math.max(scale, 1), 1.5) : 1,
+  };
+}

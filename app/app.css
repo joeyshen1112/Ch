@@ -38,6 +38,9 @@ main{padding:14px 14px calc(74px + env(safe-area-inset-bottom,0px));max-width:64
 .tabs button .e{display:block;font-size:1.25rem;margin-bottom:2px}
 .tabs button.on{color:var(--pine);font-weight:700}
 .tabs button.on .e{transform:scale(1.12)}
+.tabs button[hidden]{display:none}
+body.single-tab .tabs{display:none}
+body.single-tab main{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 
 /* 卡片與表單 */
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}

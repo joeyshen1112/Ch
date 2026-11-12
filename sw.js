@@ -1,10 +1,10 @@
 /* sw.js — app shell cache-first；GAS／跨域請求一律不攔截（離線寫入由 app/sync.js 佇列處理）
  * 改動 SHELL 內任何檔案時，必須 bump CACHE 版本（tt-vN）。 */
-const CACHE = 'tt-v21'; // v21: 行程清單去掉誤導的焦點外框、標出目前
+const CACHE = 'tt-v22'; // v22: 每份行程可設定只顯示哪些分頁、字體大小
 const SHELL = [
   './app.html',
   './manifest.json',
-  './app/app.css?v=14',
+  './app/app.css?v=15',
   './app/sync.js',
   './app/trips.js',
   './app/ui.js',
